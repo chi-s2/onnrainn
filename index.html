@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>オンライン秘書タイプ診断</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf8f3;
+    --beige: #f5ede0;
+    --beige2: #ecddd0;
+    --pink-light: #fce8ec;
+    --pink: #f4a7ba;
+    --pink-mid: #e8809a;
+    --pink-dark: #c45c7a;
+    --brown: #8a6a5e;
+    --text: #4a3830;
+    --text-muted: #9a7b72;
+    --white: #ffffff;
+    --shadow: rgba(200,150,140,0.13);
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--white);
+    border-bottom: 2px solid var(--beige);
+    padding: 1.2rem 1rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: var(--pink-light);
+    color: var(--pink-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ===== PROGRESS ===== */
+  .progress-wrap {
+    padding: 1rem 1.2rem 0.6rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .progress-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink-dark);
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--beige);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink) 0%, var(--pink-mid) 100%);
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px var(--shadow);
+    margin: 1rem 1rem;
+    padding: 1.6rem 1.4rem 1.4rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ===== QUESTION ===== */
+  .q-number {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pink-mid);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .q-number::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: var(--pink-light);
+    border-radius: 50%;
+  }
+
+  .q-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .q-text {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 1.4rem;
+  }
+
+  /* ===== OPTIONS ===== */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    background: var(--cream);
+    border: 1.5px solid var(--beige2);
+    border-radius: 14px;
+    padding: 13px 16px 13px 46px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .option-btn::before {
+    content: attr(data-letter);
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    background: var(--beige);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brown);
+    text-align: center;
+    line-height: 22px;
+  }
+
+  .option-btn:hover {
+    background: var(--pink-light);
+    border-color: var(--pink);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(230,130,155,0.15);
+  }
+
+  .option-btn:hover::before {
+    background: var(--pink);
+    color: var(--white);
+  }
+
+  .option-btn.selected {
+    background: var(--pink-light);
+    border-color: var(--pink-mid);
+    box-shadow: 0 4px 14px rgba(230,130,155,0.2);
+  }
+
+  .option-btn.selected::before {
+    background: var(--pink-mid);
+    color: var(--white);
+  }
+
+  /* ===== NAV BUTTONS ===== */
+  .nav-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.6rem;
+    gap: 10px;
+  }
+
+  .btn-back {
+    background: transparent;
+    border: 1.5px solid var(--beige2);
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-back:hover { border-color: var(--brown); color: var(--brown); }
+
+  .btn-next {
+    flex: 1;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--pink-mid) 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 13px 24px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(228,130,154,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+  }
+
+  .btn-next.visible {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .btn-next:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(228,130,154,0.45); }
+  .btn-next:active { transform: translateY(0); }
+
+  /* ===== TOP PAGE ===== */
+  #top-page { display: block; }
+  #quiz-page { display: none; }
+  #result-page { display: none; }
+
+  .hero {
+    text-align: center;
+    padding: 2rem 1.4rem 1rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .hero-emoji { font-size: 56px; margin-bottom: 0.8rem; display: block; }
+
+  .hero h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+
+  .hero p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 1.4rem;
+  }
+
+  .info-chips {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.6rem;
+  }
+
+  .chip {
+    background: var(--beige);
+    color: var(--brown);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 13px;
+    border-radius: 20px;
+  }
+
+  .btn-start {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 0.8rem;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--pink-mid) 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 15px 24px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    box-shadow: 0 6px 22px rgba(228,130,154,0.38);
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(228,130,154,0.5); }
+
+  .hero-note {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ===== RESULT PAGE ===== */
+  .result-hero {
+    text-align: center;
+    padding: 1.4rem 1rem 0.8rem;
+  }
+
+  .result-crown { font-size: 44px; display: block; margin-bottom: 0.4rem; }
+
+  .result-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink-mid);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .result-type-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pink-light);
+    border: 1.5px solid var(--pink);
+    border-radius: 30px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink-dark);
+    margin-bottom: 1.2rem;
+  }
+
+  .result-desc {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--text-muted);
+    margin-bottom: 1.4rem;
+  }
+
+  .strengths {
+    background: var(--cream);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .strengths-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .strength-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 7px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .strength-item::before {
+    content: '✦';
+    color: var(--pink-mid);
+    font-size: 11px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .start-guide {
+    background: linear-gradient(135deg, #fff5f7 0%, #fef0f5 100%);
+    border: 1.5px solid var(--pink);
+    border-radius: 14px;
+    padding: 1.1rem 1.1rem 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .start-guide-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink-dark);
+    margin-bottom: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .step-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 9px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    background: var(--pink-mid);
+    border-radius: 50%;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .step-text {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  /* ===== CTA BUTTONS ===== */
+  .cta-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+  }
+
+  .btn-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: #06C755;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(6,199,85,0.3);
+    transition: all 0.2s;
+  }
+
+  .btn-line:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6,199,85,0.4); }
+
+  .btn-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: var(--white);
+    border: 1.5px solid var(--beige2);
+    border-radius: 30px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-note:hover { border-color: var(--brown); transform: translateY(-1px); }
+
+  .btn-retry {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .anim-in { animation: fadeSlideUp 0.4s ease forwards; }
+
+  /* ===== SCORE BAR ===== */
+  .score-section {
+    margin-bottom: 1.2rem;
+  }
+
+  .score-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 10px;
+    letter-spacing: 0.06em;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+
+  .score-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .score-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--beige);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink) 0%, var(--pink-mid) 100%);
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1) 0.3s;
+  }
+
+  .score-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink-dark);
+    width: 28px;
+    text-align: right;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: var(--beige);
+    margin: 1rem 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP PAGE -->
+<div id="top-page">
+  <div class="header">
+    <div class="header-badge">✨ 無料診断</div>
+    <h1>オンライン秘書タイプ診断</h1>
+  </div>
+  <div class="hero">
+    <span class="hero-emoji">🌸</span>
+    <h2>あなたに向いている<br>オンライン秘書の仕事は？</h2>
+    <p>在宅で働きたいけど、自分に何ができるかわからない…<br>そんな方のための診断です。<br>10問の質問に答えるだけで、<br>あなたに合ったスタイルがわかります！</p>
+    <div class="info-chips">
+      <span class="chip">📝 10問だけ</span>
+      <span class="chip">⏱ 約2分</span>
+      <span class="chip">🆓 無料</span>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">診断スタート ▶</button>
+    <p class="hero-note">登録不要・個人情報不要で安心です</p>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div id="quiz-page">
+  <div class="header">
+    <div class="header-badge">✨ 診断中</div>
+    <h1>オンライン秘書タイプ診断</h1>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span class="progress-label">あと少しです、がんばって！</span>
+      <span class="progress-count" id="progress-count">1 / 10</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+    </div>
+  </div>
+
+  <div class="card anim-in" id="question-card">
+    <div class="q-number" id="q-number">Q1</div>
+    <span class="q-icon" id="q-icon">🌸</span>
+    <p class="q-text" id="q-text">質問文がここに入ります</p>
+    <div class="options" id="options-container"></div>
+    <div class="nav-area">
+      <button class="btn-back" id="btn-back" onclick="prevQuestion()" style="display:none">← もどる</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">つぎへ →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT PAGE -->
+<div id="result-page">
+  <div class="header">
+    <div class="header-badge">✨ 診断結果</div>
+    <h1>オンライン秘書タイプ診断</h1>
+  </div>
+
+  <div class="card anim-in" id="result-card">
+    <div class="result-hero">
+      <span class="result-crown" id="result-icon">🌸</span>
+      <p class="result-label">あなたのタイプは</p>
+      <h2 class="result-type-name" id="result-type-name">タイプ名</h2>
+      <div class="result-badge" id="result-badge">🌸 タグ</div>
+    </div>
+
+    <p class="result-desc" id="result-desc">説明文</p>
+
+    <div class="score-section">
+      <p class="score-title">📊 あなたのスコア分布</p>
+      <div id="score-bars"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="strengths" id="strengths-area">
+      <p class="strengths-title">✦ あなたの強み</p>
+      <div id="strengths-list"></div>
+    </div>
+
+    <div class="start-guide" id="start-guide-area">
+      <p class="start-guide-title">🗺 おすすめの始め方</p>
+      <div id="steps-list"></div>
+    </div>
+
+    <div class="cta-area">
+      <a href="https://lin.ee/XXXXXXX" class="btn-line" target="_blank">
+        📣 LINE登録で詳しい情報を受け取る
+      </a>
+      <a href="https://note.com/XXXXXXX" class="btn-note" target="_blank">
+        📖 関連note記事を読む
+      </a>
+    </div>
+
+    <button class="btn-retry" onclick="retryQuiz()">↩ もう一度診断する</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    icon: "💻",
+    text: "パソコンやスマホで作業するとき、どんなことが好きですか？",
+    options: [
+      { text: "ファイル整理や表計算など、きちんと整えること", scores: { jimu: 3, sns: 0, ai: 1, writing: 0, keiri: 1 } },
+      { text: "SNSやブログで情報を発信すること", scores: { jimu: 0, sns: 3, ai: 0, writing: 1, keiri: 0 } },
+      { text: "新しいツールやアプリを試してみること", scores: { jimu: 0, sns: 0, ai: 3, writing: 0, keiri: 0 } },
+      { text: "文章を書いたり、まとめたりすること", scores: { jimu: 0, sns: 1, ai: 0, writing: 3, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "🕐",
+    text: "1日の中で「集中できる時間」はいつですか？",
+    options: [
+      { text: "子どもが学校や保育園に行っている昼間", scores: { jimu: 1, sns: 1, ai: 1, writing: 1, keiri: 1 } },
+      { text: "夜、家族が寝てからの静かな時間", scores: { jimu: 1, sns: 2, ai: 2, writing: 2, keiri: 1 } },
+      { text: "朝、みんなが起きる前の早朝", scores: { jimu: 2, sns: 1, ai: 1, writing: 1, keiri: 2 } },
+      { text: "スキマ時間をうまく使って少しずつ", scores: { jimu: 0, sns: 2, ai: 0, writing: 0, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "😊",
+    text: "お仕事で一番「やりがい」を感じる瞬間はどれですか？",
+    options: [
+      { text: "依頼されたことを正確に、ミスなく仕上げたとき", scores: { jimu: 3, sns: 0, ai: 0, writing: 0, keiri: 2 } },
+      { text: "投稿やコンテンツに「いいね」や反応をもらったとき", scores: { jimu: 0, sns: 3, ai: 0, writing: 1, keiri: 0 } },
+      { text: "新しい方法を試して、仕事がうまくいったとき", scores: { jimu: 0, sns: 0, ai: 3, writing: 0, keiri: 0 } },
+      { text: "自分の言葉が誰かの役に立ったと感じたとき", scores: { jimu: 0, sns: 1, ai: 0, writing: 3, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "🔢",
+    text: "数字や計算に対してどんなイメージを持っていますか？",
+    options: [
+      { text: "得意！数字を見るとわくわくする", scores: { jimu: 1, sns: 0, ai: 0, writing: 0, keiri: 3 } },
+      { text: "苦手ではないけど、特別好きでもない", scores: { jimu: 2, sns: 1, ai: 1, writing: 1, keiri: 1 } },
+      { text: "少し苦手だけど、やれないことはない", scores: { jimu: 1, sns: 1, ai: 2, writing: 1, keiri: 0 } },
+      { text: "できれば数字は避けたい", scores: { jimu: 0, sns: 2, ai: 0, writing: 2, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "📱",
+    text: "InstagramやX（Twitter）などのSNSについて、あてはまるものは？",
+    options: [
+      { text: "毎日のようにチェックしていて、投稿も楽しんでいる", scores: { jimu: 0, sns: 3, ai: 0, writing: 1, keiri: 0 } },
+      { text: "見るのは好きだけど、自分ではあまり投稿しない", scores: { jimu: 1, sns: 1, ai: 1, writing: 1, keiri: 1 } },
+      { text: "SNSより、黙々と作業する方が好き", scores: { jimu: 2, sns: 0, ai: 1, writing: 1, keiri: 2 } },
+      { text: "SNSはよくわからないけど、興味はある", scores: { jimu: 0, sns: 1, ai: 2, writing: 0, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "✍️",
+    text: "「文章を書く」ことについて、どう感じますか？",
+    options: [
+      { text: "好き！伝えたいことをうまく言葉にできると嬉しい", scores: { jimu: 0, sns: 1, ai: 0, writing: 3, keiri: 0 } },
+      { text: "キャプションや短い文なら書ける", scores: { jimu: 0, sns: 2, ai: 0, writing: 1, keiri: 0 } },
+      { text: "苦手ではないけど、あまり得意でもない", scores: { jimu: 2, sns: 0, ai: 1, writing: 0, keiri: 2 } },
+      { text: "AIに手伝ってもらえば書けると思う", scores: { jimu: 0, sns: 0, ai: 3, writing: 1, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "🤖",
+    text: "ChatGPTなどのAIツールについて、どう思いますか？",
+    options: [
+      { text: "すでに使っていて、もっと活用したい", scores: { jimu: 0, sns: 0, ai: 3, writing: 1, keiri: 0 } },
+      { text: "気になっているけど、まだ使ったことがない", scores: { jimu: 1, sns: 1, ai: 2, writing: 1, keiri: 1 } },
+      { text: "便利そうとは思うが、難しそうで手が出ない", scores: { jimu: 1, sns: 1, ai: 0, writing: 0, keiri: 1 } },
+      { text: "特に興味はない、アナログが好き", scores: { jimu: 2, sns: 0, ai: 0, writing: 1, keiri: 2 } }
+    ]
+  },
+  {
+    icon: "📋",
+    text: "家の中でもやもやするのはどんなとき？",
+    options: [
+      { text: "書類や領収書が散らかって管理できていないとき", scores: { jimu: 1, sns: 0, ai: 0, writing: 0, keiri: 3 } },
+      { text: "SNSに投稿したいネタがあるのに忙しくてできないとき", scores: { jimu: 0, sns: 3, ai: 0, writing: 1, keiri: 0 } },
+      { text: "予定やタスクが整理できていないとき", scores: { jimu: 3, sns: 0, ai: 1, writing: 0, keiri: 1 } },
+      { text: "アイデアはあるのに、うまく言葉にできないとき", scores: { jimu: 0, sns: 0, ai: 1, writing: 3, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "🌟",
+    text: "友だちや家族からよく言われることは？",
+    options: [
+      { text: "「几帳面だね」「しっかりしてるね」", scores: { jimu: 2, sns: 0, ai: 0, writing: 0, keiri: 3 } },
+      { text: "「センスがいいね」「おしゃれだね」", scores: { jimu: 0, sns: 3, ai: 0, writing: 1, keiri: 0 } },
+      { text: "「機械に強いね」「新しいもの好きだね」", scores: { jimu: 0, sns: 0, ai: 3, writing: 0, keiri: 0 } },
+      { text: "「文章上手だね」「説明がわかりやすい」", scores: { jimu: 0, sns: 0, ai: 0, writing: 3, keiri: 0 } }
+    ]
+  },
+  {
+    icon: "💼",
+    text: "在宅ワークを始める理由として一番近いものは？",
+    options: [
+      { text: "家計の足しにしたい、安定した収入が欲しい", scores: { jimu: 2, sns: 0, ai: 0, writing: 0, keiri: 2 } },
+      { text: "自分の個性やセンスを活かして働きたい", scores: { jimu: 0, sns: 3, ai: 0, writing: 2, keiri: 0 } },
+      { text: "スキルアップして将来の選択肢を広げたい", scores: { jimu: 0, sns: 0, ai: 3, writing: 1, keiri: 0 } },
+      { text: "人の役に立てる仕事、やりがいを感じたい", scores: { jimu: 2, sns: 1, ai: 0, writing: 1, keiri: 0 } }
+    ]
+  }
+];
+
+const types = {
+  jimu: {
+    name: "事務サポートタイプ",
+    icon: "📋",
+    badge: "🗂 几帳面・正確さが武器",
+    desc: "あなたは丁寧で正確な仕事が得意な、安定感バツグンのタイプです！スケジュール管理やデータ入力、ファイル整理など、「縁の下の力持ち」として活躍できます。オンライン秘書の中でも需要が高く、初心者でも始めやすいお仕事です。",
+    strengths: ["締め切りを守ることが得意", "正確・丁寧に物事を進められる", "コツコツ積み上げるのが苦にならない"],
+    steps: [
+      "まずはクラウドワークスやランサーズに登録してみましょう",
+      "「データ入力」「スケジュール管理」で案件を探してみて",
+      "ExcelやGoogleスプレッドシートの基本を少し練習すると◎",
+      "最初は低単価でも、実績を積んで単価アップを目指して！"
+    ]
+  },
+  sns: {
+    name: "SNS運用サポートタイプ",
+    icon: "📱",
+    badge: "✨ センス・発信力が武器",
+    desc: "あなたはSNSへの感度が高く、トレンドを掴む力があります！クライアントのInstagramやX（Twitter）の運用代行、投稿作成、コメント返信などで活躍できるタイプです。センスと継続力を活かして、フォロワー増加のサポートができます。",
+    strengths: ["SNSのトレンドを自然にキャッチできる", "写真選びやキャプションのセンスがある", "コンスタントな投稿管理が得意"],
+    steps: [
+      "まず自分のSNSを整えて、発信力を証明する実績にしよう",
+      "「Canva」でデザインの基本を身につけると即戦力に",
+      "SNS運用代行に特化したコミュニティやスクールを探してみて",
+      "小規模なアカウント運用の実績を作ってポートフォリオに"
+    ]
+  },
+  ai: {
+    name: "AI活用サポートタイプ",
+    icon: "🤖",
+    badge: "⚡ 先端スキル・効率化が武器",
+    desc: "あなたは新しいツールへの興味や適応力が高い、これからの時代に大注目のタイプです！ChatGPTなどのAIツールを使って、クライアントの仕事を効率化するサポートができます。AI活用スキルは今後ますます需要が高まる、将来性バツグンの分野です。",
+    strengths: ["新しいツールへの抵抗感が少ない", "試行錯誤しながら問題を解決できる", "効率化・時短のアイデアが浮かびやすい"],
+    steps: [
+      "まずChatGPT（無料版）を使い倒して基本操作を覚えよう",
+      "「AIで仕事効率化」系のYouTubeや記事でインプットを",
+      "Notionや自動化ツール（Zapier等）にも少しずつ触れてみて",
+      "AIを活用した議事録作成・資料整理などで実績を作ろう"
+    ]
+  },
+  writing: {
+    name: "ライティングサポートタイプ",
+    icon: "✍️",
+    badge: "📝 文章力・表現力が武器",
+    desc: "あなたは言葉で人の心を動かす力があります！ブログ記事の作成、メルマガ原稿、商品説明文など、クライアントの「言いたいこと」を文章に変えるサポートが得意なタイプです。リモートで完結するお仕事が多く、在宅ワーク向きです。",
+    strengths: ["読み手の気持ちに寄り添った文章が書ける", "情報をわかりやすく整理して伝えられる", "自分の言葉で表現するのが好き"],
+    steps: [
+      "まずはクラウドソーシングで「ライティング」案件に応募を",
+      "SEOライティングの基本（キーワード選定）を学んでみよう",
+      "自分の得意ジャンル（育児・料理・節約など）で書いてみて",
+      "WordPressの基本操作も覚えると案件の幅が広がります"
+    ]
+  },
+  keiri: {
+    name: "経理サポートタイプ",
+    icon: "🔢",
+    badge: "💰 数字への強さ・信頼感が武器",
+    desc: "あなたは数字への抵抗がなく、正確さと責任感を持って仕事ができるタイプです！請求書作成、経費精算、帳簿管理など、クライアントのお金まわりをサポートできます。専門性が高いため、スキルが身につくほど単価アップしやすい分野です。",
+    strengths: ["数字を扱うことへの苦手意識がない", "細かいミスを防ぎ、丁寧に確認できる", "守秘義務など、責任のある仕事が得意"],
+    steps: [
+      "弥生会計やfreeeなど会計ソフトの無料トライアルで慣れよう",
+      "「簿記3級」の取得で信頼感と単価が大幅アップ！",
+      "まずは個人事業主向けの確定申告サポートから始めてみて",
+      "税理士事務所のアシスタント募集も狙い目です"
+    ]
+  }
+};
+
+const typeOrder = ['jimu','sns','ai','writing','keiri'];
+const typeNames = { jimu:'事務サポート', sns:'SNS運用', ai:'AI活用', writing:'ライティング', keiri:'経理サポート' };
+
+let currentQ = 0;
+let answers = Array(questions.length).fill(null);
+let scores = { jimu: 0, sns: 0, ai: 0, writing: 0, keiri: 0 };
+
+function startQuiz() {
+  document.getElementById('top-page').style.display = 'none';
+  document.getElementById('quiz-page').style.display = 'block';
+  currentQ = 0;
+  answers = Array(questions.length).fill(null);
+  scores = { jimu: 0, sns: 0, ai: 0, writing: 0, keiri: 0 };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const card = document.getElementById('question-card');
+  card.classList.remove('anim-in');
+  void card.offsetWidth;
+  card.classList.add('anim-in');
+
+  document.getElementById('q-number').textContent = `Q${currentQ + 1}`;
+  document.getElementById('q-icon').textContent = q.icon;
+  document.getElementById('q-text').textContent = q.text;
+
+  const pct = ((currentQ + 1) / questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-count').textContent = `${currentQ + 1} / ${questions.length}`;
+
+  const letters = ['A','B','C','D'];
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.setAttribute('data-letter', letters[i]);
+    btn.textContent = opt.text;
+    if (answers[currentQ] === i) btn.classList.add('selected');
+    btn.onclick = () => selectOption(i);
+    container.appendChild(btn);
+  });
+
+  const backBtn = document.getElementById('btn-back');
+  backBtn.style.display = currentQ > 0 ? 'block' : 'none';
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = currentQ === questions.length - 1 ? '結果を見る 🌸' : 'つぎへ →';
+  if (answers[currentQ] !== null) {
+    nextBtn.classList.add('visible');
+  } else {
+    nextBtn.classList.remove('visible');
+  }
+}
+
+function selectOption(idx) {
+  answers[currentQ] = idx;
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  // Calculate scores
+  scores = { jimu: 0, sns: 0, ai: 0, writing: 0, keiri: 0 };
+  answers.forEach((ans, qi) => {
+    if (ans !== null) {
+      const s = questions[qi].options[ans].scores;
+      for (const k in s) scores[k] += s[k];
+    }
+  });
+
+  // Find winner
+  let top = typeOrder.reduce((a, b) => scores[a] >= scores[b] ? a : b);
+  const t = types[top];
+
+  document.getElementById('quiz-page').style.display = 'none';
+  document.getElementById('result-page').style.display = 'block';
+
+  const card = document.getElementById('result-card');
+  card.classList.remove('anim-in');
+  void card.offsetWidth;
+  card.classList.add('anim-in');
+
+  document.getElementById('result-icon').textContent = t.icon;
+  document.getElementById('result-type-name').textContent = t.name;
+  document.getElementById('result-badge').innerHTML = t.badge;
+  document.getElementById('result-desc').textContent = t.desc;
+
+  // Score bars
+  const maxScore = Math.max(...typeOrder.map(k => scores[k])) || 1;
+  const barsEl = document.getElementById('score-bars');
+  barsEl.innerHTML = '';
+  typeOrder.forEach(k => {
+    const pct = Math.round((scores[k] / maxScore) * 100);
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <span class="score-label">${typeNames[k]}</span>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" style="width: 0%" data-pct="${pct}"></div>
+      </div>
+      <span class="score-val">${scores[k]}pt</span>
+    `;
+    barsEl.appendChild(row);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.score-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 100);
+
+  // Strengths
+  const strEl = document.getElementById('strengths-list');
+  strEl.innerHTML = t.strengths.map(s => `<div class="strength-item">${s}</div>`).join('');
+
+  // Steps
+  const stepsEl = document.getElementById('steps-list');
+  stepsEl.innerHTML = t.steps.map((s, i) => `
+    <div class="step-item">
+      <div class="step-num">${i+1}</div>
+      <div class="step-text">${s}</div>
+    </div>
+  `).join('');
+
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function retryQuiz() {
+  document.getElementById('result-page').style.display = 'none';
+  document.getElementById('top-page').style.display = 'block';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
