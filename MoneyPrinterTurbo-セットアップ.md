@@ -25,6 +25,42 @@ LLMはどれか1つでいい。安く済ませるなら DeepSeek か Gemini。
 
 ---
 
+## 手順0: このリポジトリのスクリプトを使う（いちばん速い）
+
+`mpt/` に用意してある。キーを環境変数に入れて叩くだけ。
+
+```bash
+export PEXELS_API_KEY="Pexelsのキー"
+export GEMINI_API_KEY="Geminiのキー"
+
+./mpt/setup.sh                              # 取得〜依存〜config.toml まで
+./mpt/make-video.sh "AIで副業を始める方法"    # 1本作る
+```
+
+`setup.sh` がやること:
+
+- Python 3.11/3.12 と ffmpeg の有無をチェック（無ければ何を入れるか教えて止まる）
+- `~/MoneyPrinterTurbo` にクローン、venv 作成、依存インストール
+- `config.toml` に Pexels キーと LLM キーを書き込み
+- 日本語フォントが見つかれば `resource/fonts/` にコピー
+
+`make-video.sh` のオプション:
+
+| オプション | 意味 |
+|---|---|
+| `--terms "cat,city"` | Pexels の検索ワードを英語で指定 |
+| `--count 3` | 3本まとめて出す |
+| `--voice male` | 男性声（既定は女性） |
+| `--aspect 16:9` | 横型（既定は 9:16） |
+| `--script "..."` | 台本を自分で渡す（LLM を呼ばない） |
+| `--dry` | 台本だけ作って止める |
+
+置き場所を変えたいときは `export MPT_DIR=/path/to/dir`。
+
+以下は中身を自分で組みたい場合の手順。
+
+---
+
 ## 手順A: Docker（おすすめ。環境を汚さない）
 
 ```bash
