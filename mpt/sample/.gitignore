@@ -1,0 +1,5 @@
+# build-sample.sh が落としてくる素材と、その出力
+img*.png
+voice.mp3
+sample.srt
+sample.mp4
