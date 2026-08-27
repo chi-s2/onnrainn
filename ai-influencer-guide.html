@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顔出し不要で月収75万円 — AIインフルエンサー構築ガイド</title>
+<meta name="description" content="Claude Code・Codex・MiniMax H3で作る、月収75万円超のデジタル資産。キャラクター設計から人格構築、量産、導線設計、収益化までを完全公開。">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf8f3;
+    --beige: #f5ede0;
+    --beige2: #ecddd0;
+    --pink-light: #fce8ec;
+    --pink: #f4a7ba;
+    --pink-mid: #e8809a;
+    --pink-dark: #c45c7a;
+    --brown: #8a6a5e;
+    --text: #4a3830;
+    --text-muted: #9a7b72;
+    --white: #ffffff;
+    --shadow: rgba(200,150,140,0.13);
+    --shadow-strong: rgba(200,150,140,0.22);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(160deg, #fff 0%, var(--pink-light) 55%, var(--beige) 100%);
+    border-bottom: 1px solid var(--beige2);
+    padding: 3.2rem 0 2.6rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--white);
+    color: var(--pink-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 1.1rem;
+    box-shadow: 0 2px 10px var(--shadow);
+  }
+  .hero h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(23px, 6vw, 33px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .hero .sub {
+    margin-top: 1rem;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  /* ===== STAT STRIP ===== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+    max-width: 720px;
+    margin: -1.8rem auto 0;
+    padding: 0 1.25rem;
+  }
+  .stat {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.1rem 0.5rem;
+    text-align: center;
+    box-shadow: 0 6px 22px var(--shadow);
+  }
+  .stat .num {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(18px, 4.5vw, 24px);
+    font-weight: 700;
+    color: var(--pink-dark);
+    line-height: 1.2;
+  }
+  .stat .lbl { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ===== ARTICLE ===== */
+  article { padding: 2.8rem 0 3rem; }
+
+  .lead {
+    font-size: 15px;
+    color: var(--brown);
+    background: var(--white);
+    border-left: 4px solid var(--pink);
+    border-radius: 0 12px 12px 0;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 2.6rem;
+    box-shadow: 0 3px 14px var(--shadow);
+  }
+
+  .chapter { margin-bottom: 2.8rem; }
+
+  .chapter-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--pink-mid);
+    margin-bottom: 0.4rem;
+  }
+  h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(19px, 4.8vw, 24px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text);
+    padding-bottom: 0.7rem;
+    margin-bottom: 1.1rem;
+    border-bottom: 2px dotted var(--beige2);
+  }
+  h3 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pink-dark);
+    margin: 1.6rem 0 0.6rem;
+  }
+  p { margin-bottom: 1rem; font-size: 14.5px; }
+  strong { color: var(--pink-dark); font-weight: 700; }
+  em {
+    font-style: normal;
+    background: linear-gradient(transparent 60%, var(--pink-light) 60%);
+    font-weight: 700;
+    color: var(--text);
+    padding: 0 1px;
+  }
+
+  /* ===== PULLQUOTE ===== */
+  .pull {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.7;
+    color: var(--pink-dark);
+    text-align: center;
+    padding: 1.6rem 1rem;
+    margin: 1.8rem 0;
+    position: relative;
+  }
+  .pull::before, .pull::after {
+    content: '';
+    display: block;
+    width: 44px;
+    height: 2px;
+    background: var(--pink);
+    margin: 0 auto;
+  }
+  .pull::before { margin-bottom: 1rem; }
+  .pull::after { margin-top: 1rem; }
+
+  /* ===== PILLAR / STEP CARDS ===== */
+  .cards { display: grid; gap: 0.9rem; margin: 1.2rem 0; }
+  .item {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 3px 14px var(--shadow);
+    border: 1px solid var(--beige);
+  }
+  .item .head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.35rem;
+  }
+  .item .badge {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--pink-light);
+    color: var(--pink-dark);
+    font-weight: 700;
+    font-size: 13px;
+    display: grid;
+    place-items: center;
+  }
+  .item .title {
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .item p { font-size: 13.5px; margin: 0; color: var(--brown); }
+
+  /* ===== TABLE ===== */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1.2rem 0;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px var(--shadow);
+  }
+  table { width: 100%; border-collapse: collapse; background: var(--white); font-size: 13.5px; min-width: 340px; }
+  th, td { padding: 0.75rem 0.9rem; text-align: left; }
+  thead th { background: var(--pink-mid); color: #fff; font-weight: 700; font-size: 12.5px; }
+  tbody tr:nth-child(even) { background: var(--beige); }
+  tbody td:last-child { font-weight: 700; color: var(--pink-dark); white-space: nowrap; }
+
+  /* ===== NUMBERED / BULLET LIST ===== */
+  ul.clean, ol.clean { margin: 0.6rem 0 1rem; padding-left: 0; list-style: none; }
+  ul.clean li, ol.clean li {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-bottom: 0.6rem;
+    font-size: 14px;
+  }
+  ul.clean li::before {
+    content: '✿';
+    position: absolute; left: 0; top: 0;
+    color: var(--pink);
+    font-size: 12px;
+  }
+  ol.clean { counter-reset: c; }
+  ol.clean li { counter-increment: c; }
+  ol.clean li::before {
+    content: counter(c);
+    position: absolute; left: 0; top: 2px;
+    width: 20px; height: 20px;
+    background: var(--pink-dark);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px; font-weight: 700;
+    display: grid; place-items: center;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline { position: relative; margin: 1.4rem 0 1rem; padding-left: 1.6rem; }
+  .timeline::before {
+    content: ''; position: absolute; left: 6px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--beige2);
+  }
+  .tl-item { position: relative; margin-bottom: 1.2rem; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -1.6rem; top: 5px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--pink); border: 3px solid var(--pink-light);
+  }
+  .tl-item .when { font-weight: 700; color: var(--pink-dark); font-size: 13.5px; }
+  .tl-item .what { font-size: 14px; }
+
+  /* ===== CTA ===== */
+  .cta {
+    background: linear-gradient(160deg, var(--pink-light), var(--white));
+    border-radius: 18px;
+    padding: 1.8rem 1.4rem;
+    text-align: center;
+    margin: 2.6rem 0;
+    box-shadow: 0 6px 22px var(--shadow);
+  }
+  .cta p { font-size: 14px; margin-bottom: 1rem; color: var(--brown); }
+  .cta a {
+    display: inline-block;
+    background: var(--pink-dark);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 0.75rem 2rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 14px var(--shadow-strong);
+    transition: transform 0.15s ease;
+  }
+  .cta a:hover { transform: translateY(-2px); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    text-align: center;
+    padding: 2.4rem 1.25rem 3rem;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--beige2);
+  }
+  footer .tools { font-weight: 700; color: var(--brown); margin-bottom: 0.4rem; }
+
+  .disclaimer {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    background: var(--beige);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin: 1.4rem 0 0;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="hero-badge">AI INFLUENCER · 完全構築ガイド</span>
+    <h1>顔出し不要で、<br>月収75万円超のデジタル資産をつくる</h1>
+    <p class="sub">Claude Code・Codex・MiniMax H3で作る<br>これ一冊で全部できる、2026年版の実践ロードマップ</p>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="num">75万円+</div><div class="lbl">月収レンジ</div></div>
+  <div class="stat"><div class="num">14.2万</div><div class="lbl">フォロワー</div></div>
+  <div class="stat"><div class="num">240万</div><div class="lbl">いいね</div></div>
+</div>
+
+<div class="wrap">
+<article>
+
+  <p class="lead">つい数年前まで「インフルエンサーになる」とは、整った容姿・カリスマ性・撮影チーム・休みなき撮影スケジュールを意味していました。しかし2026年の今、その常識はほぼ崩壊しています。運用コストがほぼゼロで、常に完璧な見た目を保ち、24時間365日働くAIペルソナが、SNSとサブスクリプションプラットフォームを席巻しているのです。</p>
+
+  <p>元記事のカバーが示していたのは、このデジタル資産が現実にどういう姿になるかの実例です。美しいキャラクター、月収75万円超、フォロワー14.2万人、数百万再生。これは一部の特別な才能の話ではありません。<em>ノートPC1台を持つ個人が、正しい手順で構築すれば到達できる数字</em>です。この記事では、その「正しい手順」をキャラクター設計から収益化まで完全公開します。</p>
+
+  <!-- 第1章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第1章</span>
+    <h2>2026年のリアルな数字</h2>
+    <p>夢物語ではなく、生のデータから見ていきましょう。最も有名なAIモデルのひとり <strong>Aitana López</strong> は、調子の良い月で 160万〜240万円 を稼ぎ、平均的な月でも 48万〜80万円。Fanvueで成功したクリエイターは初月で90万円に達し、3〜4ヶ月目には月300万円超までスケールした例もあります。</p>
+    <p>個人運用者の現実的なレンジはこうです。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>フォロワー規模</th><th>想定月収</th></tr></thead>
+        <tbody>
+          <tr><td>1万〜5万人</td><td>7.5万〜52万円</td></tr>
+          <tr><td>5万〜15万人</td><td>45万〜225万円</td></tr>
+          <tr><td>15万人超</td><td>120万〜600万円</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>厳しい事実も伝えます。<strong>ほとんどのアカウントは月7.5万円も稼げていません。</strong>しかし裏を返せば、月75万円を超えるアカウントには共通点があります。それは<em>複数の収益源を同時に回している</em>こと。次章で分解します。</p>
+  </section>
+
+  <!-- 第2章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第2章</span>
+    <h2>お金はどこから生まれるのか — 収益の5つの柱</h2>
+    <p>収益構造はシンプルで、柱は5つ。「どの順番で、どう組み合わせるか」が収入の天井を決めます。</p>
+    <div class="cards">
+      <div class="item"><div class="head"><span class="badge">1</span><span class="title">サブスクリプション</span></div><p>メインの安定収入。月額1,500〜4,400円。有料購読者が500〜1,000人いれば手取り月60万〜180万円。ビジネスの心臓部で、他の施策はすべてここに流し込む。</p></div>
+      <div class="item"><div class="head"><span class="badge">2</span><span class="title">カスタムコンテンツ</span></div><p>写真セット3,000〜7,500円、短尺動画7,500〜22,500円。単価は小さいが、熱量の高い時期には短期間で数百万円が動くことも。</p></div>
+      <div class="item"><div class="head"><span class="badge">3</span><span class="title">ブランド案件</span></div><p>中堅で1投稿7.5万〜45万円、上位で15万〜75万円超。ブランド側もAIペルソナ起用に慣れてきている。</p></div>
+      <div class="item"><div class="head"><span class="badge">4</span><span class="title">アフィリエイト＋デジタル商品</span></div><p>リンク、プロンプト集、キャラクターシート、プリセット。自分の構築ノウハウそのものが商品になる。</p></div>
+      <div class="item"><div class="head"><span class="badge">5</span><span class="title">有料メッセージ・ボイスノート</span></div><p>ファンとの1対1の接点を課金化。人格設計が機能していれば半自動で回る。</p></div>
+    </div>
+    <p>重要なのは、これらは<strong>排他ではない</strong>こと。月75万円超の運用者は例外なく複数の柱を同時に立てています。</p>
+  </section>
+
+  <!-- 第3章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第3章</span>
+    <h2>キャラクター設計 — 「顔」は資産である</h2>
+    <h3>キャラクターシートを最初に作る</h3>
+    <p>最初にやるべきは<strong>キャラクターシート</strong>の作成です。顔・体型・スタイルを完全に固定する設計図で、ここを曖昧にしたまま量産を始めると必ず破綻します。</p>
+    <p>コツはひとつ。<em>顔をゼロから生成しない</em>こと。実在の参照を2つブレンドし、そこに「唯一無二のディテール」を1つ加える。ほくろの位置、髪の分け目、瞳の色のわずかな偏り——そういう小さな固有性が、再現性と認知度の両方を担保します。</p>
+    <div class="pull">顔の一貫性は技術的なこだわりではなく、<br>「信頼」という資産そのものである</div>
+    <p>失敗原因の上位に必ずあるのが「投稿ごとに顔が変わる（face drift）」問題です。フォロワーは無意識に「いつもの顔」を探しています。顔が漂流するキャラクターには、誰も感情を預けません。</p>
+  </section>
+
+  <!-- 第4章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第4章</span>
+    <h2>人格設計 — 画像ではなく「人間性」が稼がせる</h2>
+    <p>ここが最も重要な章です。はっきり言います。<strong>稼ぐアカウントと稼げないアカウントの差は、画像の美しさではなく人格の有無です。</strong></p>
+    <h3>4つのテキストファイルがキャラクターを生かす</h3>
+    <ul class="clean">
+      <li><strong>persona</strong> — 生い立ち、職業、価値観、口癖</li>
+      <li><strong>voice</strong> — 文章のリズム、語尾、絵文字の使い方</li>
+      <li><strong>boundaries</strong> — 何を言い、何を言わないか</li>
+      <li><strong>memory</strong> — ファンとの過去のやり取りの蓄積</li>
+    </ul>
+    <p>言語モデルは返信のたびにこれらを読み込みます。だからこそ数百の会話を同時に回してもキャラクターが一度もブレない。ファンは「この子は私を覚えている」と感じ、その感覚が月額課金とカスタム注文の源泉になります。</p>
+    <h3>Claude CodeとCodexが運用の中核になる</h3>
+    <p>人格ファイルの管理は規模が大きくなるほど複雑になります。<strong>Claude Code</strong> を使えば、人格ファイルのバージョン管理、memoryの要約・圧縮、返信トーンの自動検証といった<em>人格運用のワークフロー自体</em>を自動化できます。<strong>Codex</strong> には投稿スケジュールのスクリプト、メタデータのクリーニング、複数プラットフォームへの投稿自動化といった運用レイヤーを担わせます。Claude Codeが「人格の守り手」、Codexが「運用の手足」。この2つを中核に据えると、一人運用でもチーム並みの品質とスループットが実現します。</p>
+  </section>
+
+  <!-- 第5章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第5章</span>
+    <h2>コンテンツ量産パイプライン — MiniMax H3を中核に</h2>
+    <h3>3層の制作パイプライン</h3>
+    <div class="cards">
+      <div class="item"><div class="head"><span class="title">🖼 画像</span></div><p>Flux・GPT Image・Ideogramで、キャラクターシートに厳密に従って量産。「1枚の完璧な写真」ではなく「100枚の一貫した写真」を目指す。</p></div>
+      <div class="item"><div class="head"><span class="title">🎬 動画（MiniMax H3）</span></div><p>2K出力に対応し、モーションの自然さでもトップクラス。image-to-video運用なら顔の一貫性も維持しやすい。TikTokでの認知獲得において動画の破壊力は静止画の比ではない。</p></div>
+      <div class="item"><div class="head"><span class="title">🔊 音声</span></div><p>ElevenLabsで声を固定。ボイスノート課金（柱5）はここから生まれる。</p></div>
+    </div>
+    <h3>「AI痕」を消す最終工程</h3>
+    <p>生成後のコンテンツは、あえて意図的に「汚す」。グレインを乗せ、明るさを微妙に崩し、スマートフォンから投稿する。完璧すぎる画像は逆に不自然で、プラットフォームの検知にも引っかかりやすい。<strong>メタデータのクリーニングを怠れば、BANリスクが跳ね上がります。</strong>この最後の仕上げを雑に扱うアカウントは、素材が良くても生き残れません。</p>
+  </section>
+
+  <!-- 第6章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第6章</span>
+    <h2>導線設計（ファネル） — 認知から収益までの一本道</h2>
+    <p>どんなに良いコンテンツも、導線なしには1円にもなりません。ファネルは3層で設計します。</p>
+    <div class="cards">
+      <div class="item"><div class="head"><span class="badge">1</span><span class="title">TikTok ＝ リーチ</span></div><p>アルゴリズムの爆発力で新規層に届ける（認知獲得）。</p></div>
+      <div class="item"><div class="head"><span class="badge">2</span><span class="title">Instagram＋Telegram ＝ 関係構築</span></div><p>日常投稿とクローズドな空間で愛着を育てる（ウォーミングアップ）。</p></div>
+      <div class="item"><div class="head"><span class="badge">3</span><span class="title">サブスク ＝ 収益化</span></div><p>すべての流れの終着点（マネタイズ）。</p></div>
+    </div>
+    <div class="pull">TikTokのプロフィールに<br>課金リンクを直接貼らないこと</div>
+    <p>この一点だけでアカウント制限のリスクが大幅に下がります。課金導線はInstagramやTelegramを経由させる「ワンクッション設計」が、長く稼ぎ続けるための基本です。第4章で作った人格は、このファネルの中間層でこそ真価を発揮します。</p>
+  </section>
+
+  <!-- 第7章 -->
+  <section class="chapter">
+    <span class="chapter-tag">第7章</span>
+    <h2>なぜ多くの人は稼げないのか — 6つの失敗パターン</h2>
+    <ol class="clean">
+      <li>美しいだけの「空っぽの人形」を作る — 人格なきキャラクターにファンは定着しない</li>
+      <li>売り始めるのが早すぎる — 関係構築前の販売は信頼を破壊する</li>
+      <li>投稿ごとに顔が変わる — face driftはキャラクターの死</li>
+      <li>メタデータをクリーンにしない — 検知とBANのリスクが常につきまとう</li>
+      <li>初週から過激なコンテンツを投稿する — プラットフォーム制限まっしぐら</li>
+      <li>愛着を育てず即クロージング — ファネルの中間層を飛ばす愚策</li>
+    </ol>
+    <p>失敗の本質はすべて同じです。<em>「技術」を急いで「関係」を飛ばすこと。</em>AIインフルエンサービジネスは、実はとても人間くさいビジネスなのです。</p>
+  </section>
+
+  <!-- 終章 -->
+  <section class="chapter">
+    <span class="chapter-tag">終章</span>
+    <h2>現実的なタイムラインと、今夜の決断</h2>
+    <p>毎日のコンテンツ投稿・人格運用・正しいファネル。この3つを継続した場合の目安です。</p>
+    <div class="timeline">
+      <div class="tl-item"><div class="when">30〜45日</div><div class="what">初めての 7.5万〜22万円</div></div>
+      <div class="tl-item"><div class="when">60〜90日</div><div class="what">45万〜105万円 に到達</div></div>
+      <div class="tl-item"><div class="when">4〜6ヶ月</div><div class="what">安定して 75万〜180万円、そしてその先へ</div></div>
+    </div>
+    <p>冒頭の数字——月収75万円、フォロワー14.2万人、240万いいね——は、体系的に取り組む人にとって、すでに十分到達可能な「中堅レベル」です。道具はすべて揃っています。Claude CodeとCodexが人格と運用を支え、MiniMax H3がコンテンツを量産する。</p>
+    <div class="pull">あとは、他人が作るのを見続けるか。<br>それとも今夜、自分のものを作り始めるか。</div>
+  </section>
+
+  <div class="cta">
+    <p>業務でAI組織をすぐに使いたいなどの相談はこちら</p>
+    <a href="https://lin.ee/Nfn1iJg" target="_blank" rel="noopener">LINEで相談する →</a>
+  </div>
+
+  <div class="disclaimer">
+    ※ 本記事は元記事の内容を読みやすくまとめた解説コンテンツです。記載の収益額はあくまで一例であり、成果を保証するものではありません。各プラットフォームの利用規約・年齢確認・コンテンツポリシーを必ず遵守し、法令の範囲内で運用してください。
+  </div>
+
+</article>
+</div>
+
+<footer>
+  <div class="tools">Claude Code × Codex × MiniMax H3</div>
+  この記事が役に立ったなら、次の構築記事をフォローして待っていてください。
+</footer>
+
+</body>
+</html>
