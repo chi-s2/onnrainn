@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day3セミナー 参加特典 受け取りページ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf8f3;
+    --beige: #f5ede0;
+    --beige2: #ecddd0;
+    --pink-light: #fce8ec;
+    --pink: #f4a7ba;
+    --pink-mid: #e8809a;
+    --pink-dark: #c45c7a;
+    --brown: #8a6a5e;
+    --text: #4a3830;
+    --text-muted: #9a7b72;
+    --white: #ffffff;
+    --line-green: #06C755;
+    --shadow: rgba(200,150,140,0.13);
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--white);
+    border-bottom: 2px solid var(--beige);
+    padding: 1.2rem 1rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: var(--pink-light);
+    color: var(--pink-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 2rem 1.4rem 0.6rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .hero-emoji { font-size: 52px; margin-bottom: 0.8rem; display: block; }
+
+  .hero h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+
+  .hero p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+  }
+
+  .info-chips {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    background: var(--beige);
+    color: var(--brown);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 13px;
+    border-radius: 20px;
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    max-width: 480px;
+    margin: 1.6rem auto 0.6rem;
+    padding: 0 1.4rem;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brown);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== BENEFIT CARD ===== */
+  .card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px var(--shadow);
+    margin: 0.9rem auto;
+    padding: 1.3rem 1.3rem 1.1rem;
+    max-width: 480px;
+    width: calc(100% - 2rem);
+  }
+
+  .benefit-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 0.9rem;
+  }
+
+  .benefit-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    background: var(--pink-light);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .benefit-no {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pink-mid);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .benefit-name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .benefit-desc {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .benefit-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    background: var(--cream);
+    border: 1px solid var(--beige2);
+    color: var(--brown);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .btn-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: var(--line-green);
+    border: none;
+    border-radius: 30px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(6,199,85,0.3);
+    transition: all 0.2s;
+  }
+
+  .btn-line:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(6,199,85,0.4); }
+  .btn-line:active { transform: translateY(0); }
+
+  /* ===== HOW TO ===== */
+  .howto {
+    background: linear-gradient(135deg, #fff5f7 0%, #fef0f5 100%);
+    border: 1.5px solid var(--pink);
+    border-radius: 20px;
+    max-width: 480px;
+    width: calc(100% - 2rem);
+    margin: 0.9rem auto;
+    padding: 1.2rem 1.2rem 1rem;
+  }
+
+  .howto-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink-dark);
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+  }
+
+  .step-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    background: var(--pink-mid);
+    border-radius: 50%;
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .step-text {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer-note {
+    max-width: 480px;
+    margin: 1.4rem auto 0;
+    padding: 0 1.6rem;
+    text-align: center;
+    font-size: 11.5px;
+    line-height: 1.9;
+    color: var(--text-muted);
+  }
+
+  .footer-note a { color: var(--pink-dark); }
+
+  /* ===== ANIMATION ===== */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .anim-in { animation: fadeSlideUp 0.4s ease forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-in { animation: none; }
+    .btn-line, .btn-line:hover { transition: none; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">🎁 参加特典</div>
+  <h1>Day3セミナー 特典受け取りページ</h1>
+</div>
+
+<div class="hero anim-in">
+  <span class="hero-emoji">🎁</span>
+  <h2>課題提出<br>ありがとうございます！</h2>
+  <p>Day3セミナーの参加特典は<br>下のボタンからお受け取りください。<br>各リンクはLINEで特典が届きます。</p>
+  <div class="info-chips">
+    <span class="chip">🎁 全6特典</span>
+    <span class="chip">📱 LINEで受け取り</span>
+    <span class="chip">⏱ 1分で完了</span>
+  </div>
+</div>
+
+<p class="section-title">✦ 受け取れる特典一覧</p>
+
+<div class="card anim-in">
+  <div class="benefit-head">
+    <div class="benefit-icon">🤖</div>
+    <div>
+      <p class="benefit-no">BENEFIT 01</p>
+      <p class="benefit-name">AI社員「SNS運用代行」スターターOS</p>
+    </div>
+  </div>
+  <p class="benefit-desc">SNS運用代行をAI社員に任せるための土台一式。まずはここから入るのがおすすめです。</p>
+  <div class="benefit-tags">
+    <span class="tag">SNS運用代行</span>
+    <span class="tag">AI社員</span>
+    <span class="tag">まずはここから</span>
+  </div>
+  <a href="https://lstep.app/mqxPjvs" class="btn-line" target="_blank" rel="noopener noreferrer">
+    📣 LINEで受け取る
+  </a>
+</div>
+
+<div class="card anim-in">
+  <div class="benefit-head">
+    <div class="benefit-icon">📊</div>
+    <div>
+      <p class="benefit-no">BENEFIT 02</p>
+      <p class="benefit-name">アカウント診断→提案書変換skill</p>
+    </div>
+  </div>
+  <p class="benefit-desc">アカウント診断の結果を、そのまま提案書の形に変換するためのskillです。</p>
+  <div class="benefit-tags">
+    <span class="tag">アカウント診断</span>
+    <span class="tag">提案書</span>
+    <span class="tag">skill</span>
+  </div>
+  <a href="https://lstep.app/rRkVFIp" class="btn-line" target="_blank" rel="noopener noreferrer">
+    📣 LINEで受け取る
+  </a>
+</div>
+
+<div class="card anim-in">
+  <div class="benefit-head">
+    <div class="benefit-icon">📝</div>
+    <div>
+      <p class="benefit-no">BENEFIT 03</p>
+      <p class="benefit-name">クライアント分析レポート自動生成skill</p>
+    </div>
+  </div>
+  <p class="benefit-desc">クライアントの分析レポートを自動で組み立てるskillです。</p>
+  <div class="benefit-tags">
+    <span class="tag">クライアント分析</span>
+    <span class="tag">レポート</span>
+    <span class="tag">自動生成</span>
+  </div>
+  <a href="https://lstep.app/ofokQhw" class="btn-line" target="_blank" rel="noopener noreferrer">
+    📣 LINEで受け取る
+  </a>
+</div>
+
+<div class="card anim-in">
+  <div class="benefit-head">
+    <div class="benefit-icon">🎨</div>
+    <div>
+      <p class="benefit-no">BENEFIT 04</p>
+      <p class="benefit-name">SNS制作ライン自動化skills 3点セット</p>
+    </div>
+  </div>
+  <p class="benefit-desc">SNSの制作ラインを自動化するskillの3点セットです。</p>
+  <div class="benefit-tags">
+    <span class="tag">SNS制作</span>
+    <span class="tag">自動化</span>
+    <span class="tag">3点セット</span>
+  </div>
+  <a href="https://lstep.app/jyaL863" class="btn-line" target="_blank" rel="noopener noreferrer">
+    📣 LINEで受け取る
+  </a>
+</div>
+
+<div class="card anim-in">
+  <div class="benefit-head">
+    <div class="benefit-icon">🎬</div>
+    <div>
+      <p class="benefit-no">BENEFIT 05</p>
+      <p class="benefit-name">動画編集自動化skills</p>
+    </div>
+  </div>
+  <p class="benefit-desc">動画編集まわりの作業を自動化するためのskillです。</p>
+  <div class="benefit-tags">
+    <span class="tag">動画編集</span>
+    <span class="tag">自動化</span>
+    <span class="tag">skill</span>
+  </div>
+  <a href="https://lstep.app/RGEd8pH" class="btn-line" target="_blank" rel="noopener noreferrer">
+    📣 LINEで受け取る
+  </a>
+</div>
+
+<div class="card anim-in">
+  <div class="benefit-head">
+    <div class="benefit-icon">🔐</div>
+    <div>
+      <p class="benefit-no">BENEFIT 06</p>
+      <p class="benefit-name">AIエージェント セキュリティチェックリスト</p>
+    </div>
+  </div>
+  <p class="benefit-desc">AIエージェントを実務で動かす前に確認しておきたい項目のチェックリストです。</p>
+  <div class="benefit-tags">
+    <span class="tag">セキュリティ</span>
+    <span class="tag">チェックリスト</span>
+    <span class="tag">AIエージェント</span>
+  </div>
+  <a href="https://lstep.app/XBkgdn4" class="btn-line" target="_blank" rel="noopener noreferrer">
+    📣 LINEで受け取る
+  </a>
+</div>
+
+<div class="howto anim-in">
+  <p class="howto-title">🗺 受け取り方と、おすすめの順番</p>
+  <div class="step-item">
+    <div class="step-num">1</div>
+    <div class="step-text">受け取りたい特典の「LINEで受け取る」を押します</div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">2</div>
+    <div class="step-text">LINEが開いたら、そのまま案内にそって進めてください</div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">3</div>
+    <div class="step-text">迷ったら「01 スターターOS」から。土台ができてから他のskillを足すとスムーズです</div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">4</div>
+    <div class="step-text">実務で動かす前に「06 セキュリティチェックリスト」に目を通しておくと安心です</div>
+  </div>
+</div>
+
+<p class="footer-note">
+  特典は6つとも、このページからいつでも受け取れます。<br>
+  リンクが開かないときは、ブラウザで開き直してみてください。<br>
+  <a href="./index.html">→ オンライン秘書タイプ診断はこちら</a>
+</p>
+
+</body>
+</html>
