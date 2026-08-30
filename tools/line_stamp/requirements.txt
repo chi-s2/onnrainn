@@ -1,0 +1,4 @@
+Pillow>=10
+numpy>=1.24
+scipy>=1.10
+imageio-ffmpeg>=0.5   # ffmpeg 本体が入っていない環境用（動画入力にだけ必要）

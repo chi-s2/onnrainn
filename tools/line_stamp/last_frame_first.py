@@ -31,6 +31,8 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 try:
     from PIL import Image, ImageSequence
 except ImportError:  # pragma: no cover
@@ -104,14 +106,24 @@ def _load_from_animation(src: Path, fps: float | None) -> Clip:
     return Clip(frames, durations)
 
 
-def _load_from_video(src: Path, fps: float) -> Clip:
-    if not shutil.which("ffmpeg"):
+def ffmpeg_exe() -> str:
+    """ffmpeg の実行ファイルを探す。無ければ pip の imageio-ffmpeg 同梱版を使う。"""
+    found = shutil.which("ffmpeg")
+    if found:
+        return found
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
         raise SystemExit(
             "動画の読み込みには ffmpeg が必要です。\n"
-            "先に GIF / APNG / 連番PNG に書き出してから渡してください。"
+            "  pip install imageio-ffmpeg   （または ffmpeg 本体をインストール）"
         )
+
+
+def _load_from_video(src: Path, fps: float) -> Clip:
     with tempfile.TemporaryDirectory() as tmp:
-        cmd = ["ffmpeg", "-loglevel", "error", "-i", str(src),
+        cmd = [ffmpeg_exe(), "-loglevel", "error", "-i", str(src),
                "-vf", f"fps={fps}", os.path.join(tmp, "%04d.png")]
         subprocess.run(cmd, check=True)
         clip = _load_from_dir(Path(tmp), fps)
@@ -233,6 +245,30 @@ def fit_duration(clip: Clip, loop: int | None, seconds: int | None) -> tuple[Cli
     return Clip(clip.frames, _rescale_exact(clip.durations, per_loop)), lp, total
 
 
+def resize_rgba(img: Image.Image, size: tuple) -> Image.Image:
+    """アルファを掛けてから縮小し、あとで戻す。
+
+    そのまま縮小すると、完全に透明な画素が持っている色（グリーンバックなら緑）が
+    輪郭に混ざってしまう。numpy があれば乗算アルファで正しく縮小する。
+    """
+    try:
+        import numpy as np
+    except ImportError:
+        return img.resize(size, Image.LANCZOS)
+
+    src = np.asarray(img.convert("RGBA"), dtype=np.float32)
+    a = src[..., 3:4] / 255.0
+    pre = np.concatenate([src[..., :3] * a, src[..., 3:4]], axis=2)
+    small = np.asarray(
+        Image.fromarray(pre.astype(np.uint8), "RGBA").resize(size, Image.LANCZOS),
+        dtype=np.float32,
+    )
+    na = small[..., 3:4] / 255.0
+    rgb = np.clip(small[..., :3] / np.where(na == 0, 1.0, na), 0, 255)
+    out = np.concatenate([rgb, small[..., 3:4]], axis=2).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
 def fit_size(clip: Clip, max_w: int = MAX_W, max_h: int = MAX_H) -> Clip:
     """320x270 以内・幅高さとも偶数にする（拡大はしない）。"""
     w, h = clip.frames[0].size
@@ -241,8 +277,7 @@ def fit_size(clip: Clip, max_w: int = MAX_W, max_h: int = MAX_H) -> Clip:
     nw, nh = nw - (nw % 2), nh - (nh % 2)
     if (nw, nh) == (w, h):
         return clip
-    frames = [f.resize((nw, nh), Image.LANCZOS) for f in clip.frames]
-    return Clip(frames, clip.durations)
+    return Clip([resize_rgba(f, (nw, nh)) for f in clip.frames], clip.durations)
 
 
 # ---- 書き出し ---------------------------------------------------------------
@@ -283,9 +318,9 @@ def save_apng(clip: Clip, out: Path, loop: int, max_bytes: int) -> tuple[int, st
         w, h = clip.frames[0].size
         nw, nh = max(2, int(w * ratio)) & ~1, max(2, int(h * ratio)) & ~1
         work = Clip(
-            [f.resize((nw, nh), Image.LANCZOS)
-              .quantize(colors=64, method=Image.Quantize.FASTOCTREE)
-              .convert("RGBA") for f in clip.frames],
+            [resize_rgba(f, (nw, nh))
+             .quantize(colors=64, method=Image.Quantize.FASTOCTREE)
+             .convert("RGBA") for f in clip.frames],
             clip.durations,
         )
         size = _write(work, out, loop)
@@ -325,6 +360,47 @@ def report(path: Path) -> None:
 
 
 # ---- CLI --------------------------------------------------------------------
+def clean_clip(clip: Clip, max_area: float = 0.02, margin: int = 2) -> tuple[Clip, int]:
+    """全コマの内部の透過穴を埋め、輪郭より内側の半透明をベタにする。
+
+    リサイズや減色のあとにもう一度かけるのが効く（縮小で穴が復活するため）。
+    """
+    try:
+        import chroma
+    except ImportError:
+        raise SystemExit("この処理には numpy と scipy が必要です:  pip install numpy scipy")
+    frames, holes = [], 0
+    for f in clip.frames:
+        f, st = chroma.clean(f, max_area=max_area, margin=margin)
+        holes += st["holes"]
+        frames.append(f)
+    return Clip(frames, clip.durations), holes
+
+
+def build_stamp(clip: Clip, *, mode: str = "rotate", pose: int = -1,
+                loop: int | None = None, seconds: int | None = None,
+                size: str = f"{MAX_W}x{MAX_H}",
+                keep_size: bool = False, keep_timing: bool = False):
+    """決めポーズの移動 → コマ数 → 再生時間 → サイズ、をまとめて適用する。
+
+    戻り値は (整形後のClip, ループ回数, ループ込みの再生時間ms または None)。
+    """
+    clip = move_pose_to_front(clip, mode, pose)
+    lp, played = max(ALLOWED_LOOPS), None
+    if not keep_timing:
+        clip = fit_frame_count(clip)
+        clip, lp, played = fit_duration(clip, loop, seconds)
+    elif loop:
+        lp = loop
+    if not keep_size:
+        try:
+            max_w, max_h = (int(v) for v in size.lower().split("x"))
+        except ValueError:
+            raise SystemExit(f"サイズは 320x270 の形式で指定してください: {size}")
+        clip = fit_size(clip, max_w, max_h)
+    return clip, lp, played
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description="動くLINEスタンプの決めポーズを1コマ目に移してAPNGで書き出す",
@@ -349,6 +425,8 @@ def main(argv=None) -> int:
                     help="収める最大サイズ WxH（既定320x270。メイン画像なら240x240）")
     ap.add_argument("--keep-size", action="store_true", help="リサイズをしない")
     ap.add_argument("--keep-timing", action="store_true", help="コマ数・再生時間の調整をしない")
+    ap.add_argument("--clean", action="store_true",
+                    help="仕上げに内部の透過穴を埋め、内側の半透明をベタにする（要 numpy/scipy）")
     ap.add_argument("--check", action="store_true", help="変換せず規格チェックだけ行う")
     args = ap.parse_args(argv)
 
@@ -367,19 +445,14 @@ def main(argv=None) -> int:
     before = len(clip.frames)
 
     pose = args.pose_frame - 1 if args.pose_frame > 0 else args.pose_frame
-    clip = move_pose_to_front(clip, args.mode, pose)
-    loop, played = max(ALLOWED_LOOPS), None
-    if not args.keep_timing:
-        clip = fit_frame_count(clip)
-        clip, loop, played = fit_duration(clip, args.loop, args.seconds)
-    elif args.loop:
-        loop = args.loop
-    if not args.keep_size:
-        try:
-            max_w, max_h = (int(v) for v in args.size.lower().split("x"))
-        except ValueError:
-            return print(f"--size は 320x270 の形式で指定してください: {args.size}") or 1
-        clip = fit_size(clip, max_w, max_h)
+    clip, loop, played = build_stamp(
+        clip, mode=args.mode, pose=pose, loop=args.loop, seconds=args.seconds,
+        size=args.size, keep_size=args.keep_size, keep_timing=args.keep_timing,
+    )
+
+    holes = 0
+    if args.clean:
+        clip, holes = clean_clip(clip)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     size, how = save_apng(clip, out, loop, args.max_bytes)
@@ -389,6 +462,8 @@ def main(argv=None) -> int:
     print(f"1コマ目   元の{label}（mode={args.mode}）")
     if played:
         print(f"再生時間  {clip.total_ms / 1000:.3f}秒 x {loop}回 = {played / 1000:g}秒")
+    if args.clean:
+        print(f"透過整理  内部の穴を{holes}箇所埋めました")
     print(f"書き出し  {out}  [{how}]")
     report(out)
     return 0 if size <= args.max_bytes else 1
