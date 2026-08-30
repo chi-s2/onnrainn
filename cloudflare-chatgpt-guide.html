@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>非エンジニア向け、Cloudflare × ChatGPTの教科書【最新版】</title>
+<meta name="description" content="Cloudflareは何をしている会社なのか、なぜ今AIの話で騒がれているのか、9月15日に何が変わるのか。非エンジニア向けに、国際空港のたとえ1つで最後まで説明します。">
+<meta name="author" content="ラッキー｜AIを武器に。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="非エンジニア向け、Cloudflare × ChatGPTの教科書【最新版】">
+<meta property="og:description" content="ネットを歩く57.5%はもう人間ではありません。AIが2,237ページ持っていって1人だけ返す。9月15日に初期設定が変わります。測る・伝える・直す・確かめるの4工程を置きました。">
+<meta property="og:locale" content="ja_JP">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdfaf6;
+    --paper: #ffffff;
+    --line: #e9e0d6;
+    --line-soft: #f2ebe3;
+    --ink: #33291f;
+    --ink-soft: #6b5c50;
+    --muted: #9a8b7e;
+    --accent: #c2703f;
+    --accent-soft: #fbf0e6;
+    --accent-dark: #9c5628;
+    --alert: #b04a52;
+    --alert-soft: #fdeceb;
+    --code-bg: #2f2a26;
+    --code-ink: #f4ede4;
+    --shadow: rgba(160,130,105,0.13);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.95;
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ===== HEADER ===== */
+  .site-header {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: 2.6rem 1.2rem 2.2rem;
+    text-align: center;
+  }
+
+  .kicker {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .site-header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .byline {
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ===== LAYOUT ===== */
+  .wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 1.2rem 4rem;
+  }
+
+  .lead {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.6rem 1.4rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 18px var(--shadow);
+  }
+
+  .lead p + p { margin-top: 1.1em; }
+
+  .lead .first {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.85;
+  }
+
+  /* ===== TOC ===== */
+  .toc {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.4rem 1.3rem;
+    margin-top: 1.6rem;
+  }
+
+  .toc h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+
+  .toc-note {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    line-height: 1.8;
+  }
+
+  .toc-group {
+    border-top: 1px dashed var(--line);
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  .toc-group-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .toc ol { list-style: none; }
+
+  .toc li { margin: 2px 0; }
+
+  .toc a {
+    display: block;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 0;
+    line-height: 1.6;
+  }
+
+  .toc a:hover { color: var(--accent-dark); }
+
+  .toc a .n {
+    display: inline-block;
+    min-width: 1.9em;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 12.5px;
+  }
+
+  /* ===== SECTIONS ===== */
+  section {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.7rem 1.4rem 1.6rem;
+    margin-top: 1.4rem;
+    scroll-margin-top: 1rem;
+  }
+
+  section > h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.65;
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 2px solid var(--line-soft);
+  }
+
+  section > h2 .num {
+    display: block;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  section p + p { margin-top: 1.15em; }
+
+  section h3 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 1.6em 0 0.6em;
+  }
+
+  strong { font-weight: 700; }
+
+  .em {
+    background: linear-gradient(transparent 62%, var(--accent-soft) 62%);
+    font-weight: 700;
+  }
+
+  /* ===== LISTS ===== */
+  .dots {
+    list-style: none;
+    margin: 1.1em 0;
+    padding-left: 0.2em;
+  }
+
+  .dots li {
+    position: relative;
+    padding-left: 1.3em;
+    margin: 0.5em 0;
+    line-height: 1.85;
+  }
+
+  .dots li::before {
+    content: '';
+    position: absolute;
+    left: 0.15em;
+    top: 0.82em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ===== CALLOUT / NUMBERS ===== */
+  .stat {
+    background: var(--accent-soft);
+    border-radius: 14px;
+    padding: 1.2rem 1.2rem;
+    margin: 1.3em 0;
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .stat-row + .stat-row { margin-top: 10px; }
+
+  .stat-num {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 27px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    line-height: 1.3;
+  }
+
+  .stat-label {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  .note {
+    background: var(--cream);
+    border-left: 3px solid var(--line);
+    border-radius: 0 10px 10px 0;
+    padding: 0.9rem 1rem;
+    margin: 1.2em 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.85;
+  }
+
+  .warn {
+    background: var(--alert-soft);
+    border-left: 3px solid var(--alert);
+    border-radius: 0 10px 10px 0;
+    padding: 0.9rem 1rem;
+    margin: 1.2em 0;
+    font-size: 14.5px;
+    line-height: 1.85;
+  }
+
+  .warn b { color: var(--alert); }
+
+  /* ===== COPY BLOCK ===== */
+  .copybox {
+    margin: 1.4em 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+
+  .copybox-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: var(--line-soft);
+    padding: 8px 10px 8px 14px;
+  }
+
+  .copybox-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+
+  .copy-btn {
+    flex: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-dark);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .copy-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .copy-btn.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .copybox pre {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    background: var(--paper);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    line-height: 1.95;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .copybox.mono pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ===== TABLE-ISH: 3つの目的 ===== */
+  .purpose {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin: 0.9em 0;
+  }
+
+  .purpose h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .purpose .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+
+  .tag-yes { background: #eaf3ec; color: #3d7a4e; }
+  .tag-hold { background: var(--line-soft); color: var(--ink-soft); }
+  .tag-no { background: var(--alert-soft); color: var(--alert); }
+
+  .purpose p { font-size: 14.5px; color: var(--ink-soft); line-height: 1.8; }
+
+  /* ===== LINKS / SOURCES ===== */
+  a { color: var(--accent-dark); }
+
+  .src {
+    margin-top: 1.3em;
+    padding-top: 0.9em;
+    border-top: 1px dashed var(--line);
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--muted);
+  }
+
+  .src strong { color: var(--ink-soft); font-size: 12px; letter-spacing: 0.05em; }
+
+  .src a { word-break: break-all; }
+
+  .biglink {
+    display: inline-block;
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin: 0.7em 0;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    color: var(--accent-dark);
+  }
+
+  .biglink:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ===== CHECK LIST ===== */
+  .checks { list-style: none; margin: 1.1em 0; }
+
+  .checks li {
+    position: relative;
+    padding-left: 2em;
+    margin: 0.65em 0;
+    line-height: 1.8;
+  }
+
+  .checks li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.4em;
+    height: 1.4em;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== STEPS ===== */
+  .steps { list-style: none; counter-reset: step; margin: 1.1em 0; }
+
+  .steps li {
+    position: relative;
+    counter-increment: step;
+    padding-left: 2.4em;
+    margin: 0.7em 0;
+    line-height: 1.8;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== CLOSING ===== */
+  .closing {
+    background: var(--ink);
+    color: #f6efe7;
+    border: none;
+  }
+
+  .closing h2 {
+    color: #fff;
+    border-bottom-color: rgba(255,255,255,0.15);
+  }
+
+  .closing .em {
+    background: linear-gradient(transparent 62%, rgba(194,112,63,0.5) 62%);
+  }
+
+  .site-footer {
+    text-align: center;
+    padding: 2.4rem 1.2rem 3rem;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 2;
+  }
+
+  .to-top {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 14px var(--shadow);
+    color: var(--accent-dark);
+    font-size: 17px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .to-top.show { display: flex; }
+
+  @media (min-width: 700px) {
+    body { font-size: 16.5px; }
+    .site-header h1 { font-size: 27px; }
+    section { padding: 2rem 2rem 1.9rem; }
+    .lead, .toc { padding: 1.8rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="kicker">非エンジニア向け</span>
+  <h1>Cloudflare × ChatGPTの教科書<br>【最新版】</h1>
+  <p class="byline">
+    ラッキー｜AIを武器に。（@lucky_note_lab）<br>
+    数字と仕様は2026年8月27日に公式発表で確認したものです
+  </p>
+</header>
+
+<div class="wrap">
+
+  <div class="lead">
+    <p class="first">これはエンジニアだけの話ではありません。サイトを持っている人、記事を書いている人、そして何も持っていない人にも、同じだけ関係があります。</p>
+    <p>サイトを開いた瞬間に出る「接続の安全性を確認しています」のぐるぐる。あのロボット判定、されたことありますよね。あれ、Cloudflareです。XもChatGPTも同時に開かなくなった日がありましたよね。あれも、Cloudflareが止まったからでした。使ってなくても、勝手に判定されているんです。</p>
+    <p>2025年11月18日、Xが開かなくなりました。ChatGPTも、Zoomも、Spotifyも、同じ日に止まりました。「インターネットが壊れた」と言われた日です。原因は、たった1社の不具合でした。その会社の名前が、この8月、また流れてきています。</p>
+    <p><strong>Cloudflare</strong>。クラウドフレア、と読みます。</p>
+    <p>サイトを開いた瞬間に一瞬だけ出る、あの画面。「接続の安全性を確認しています」。ぐるぐる回って、勝手に消えるやつです。あれも、この会社でした。そして、あの数秒で確認されているのは、<strong>あなたが人間かどうか</strong>です。いわゆるボット判定です。ボットというのは、人間ではなく自動で動きまわるプログラムのことです。</p>
+    <p>いま起きているのは、その判定の相手が、<span class="em">人間からAIに移った</span>という話です。</p>
+    <div class="stat">
+      <div class="stat-row">
+        <span class="stat-num">57.5%</span>
+        <span class="stat-label">この会社の網で観測されたアクセスのうち、もう人間ではなかった割合</span>
+      </div>
+    </div>
+    <p>ここ1週間、この会社の名前がタイムラインに流れ続けています。Workers、D1、R2、Pay per crawl、9月15日、AEO。用語だけが飛んできて、何の話なのか掴めない。その状態は正しいです。この会社は10年以上かけて、まったく別々の商売を積み上げてきました。いま流れてくる断片を1つずつ拾っても、全体像は見えません。</p>
+    <p>この記事で渡すのは、次の4つです。第一に、この会社が何屋なのかを、たとえ話1つで最後まで説明します。第二に、なぜ今この会社がAIの話で騒がれているのかを、数字と裁判で示します。第三に、9月15日に何が変わるのかを、対象を正確に切り分けて書きます。第四に、今日できることを、4つの手順にして置きます。</p>
+    <p>手順の実物は、記事の後半にまとめて置いてあります。読むだけで済ませたい人は、前半だけで十分です。なお、ここは動きの速い分野なので、実際に手を動かすときは公式ページで最新の状態を見てください。</p>
+  </div>
+
+  <nav class="toc">
+    <h2>目次（全17章）</h2>
+    <p class="toc-note">時間がない人は、12章から読んでください。手を動かす話だけが入っています。</p>
+
+    <div class="toc-group">
+      <p class="toc-group-label">1〜6章｜Cloudflareが何屋なのか</p>
+      <ol>
+        <li><a href="#ch1"><span class="n">1</span>この会社は、3つの顔を持っている</a></li>
+        <li><a href="#ch2"><span class="n">2</span>あの数秒で、何を見られているのか</a></li>
+        <li><a href="#ch3"><span class="n">3</span>たとえ話：ここは、インターネットの国際空港です</a></li>
+        <li><a href="#ch4"><span class="n">4</span>顔①　速く届ける</a></li>
+        <li><a href="#ch5"><span class="n">5</span>顔②　危ない客を止める</a></li>
+        <li><a href="#ch6"><span class="n">6</span>顔③　誰を通すか決める</a></li>
+      </ol>
+    </div>
+
+    <div class="toc-group">
+      <p class="toc-group-label">7〜11章｜なぜ今、騒がれているのか</p>
+      <ol>
+        <li><a href="#ch7"><span class="n">7</span>ネットを歩いているのは、もう半分が人間じゃない</a></li>
+        <li><a href="#ch8"><span class="n">8</span>2,237ページ持っていって、1人だけ返す</a></li>
+        <li><a href="#ch9"><span class="n">9</span>65.6億円の裁判が、すでに起きている</a></li>
+        <li><a href="#ch10"><span class="n">10</span>9月15日に、入国審査のルールが変わる</a></li>
+        <li><a href="#ch11"><span class="n">11</span>3つの目的の、見分け方</a></li>
+      </ol>
+    </div>
+
+    <div class="toc-group">
+      <p class="toc-group-label">12〜15章｜実務（測る・伝える・直す・確かめる）</p>
+      <ol>
+        <li><a href="#ch12"><span class="n">12</span>工程①　測る。URLを貼るだけ、1分で終わる</a></li>
+        <li><a href="#ch13"><span class="n">13</span>工程②　伝える。3行書くだけで、目的別に返事ができる</a></li>
+        <li><a href="#ch14"><span class="n">14</span>工程③　直す。人にもAIにも読み取りやすい形にする</a></li>
+        <li><a href="#ch15"><span class="n">15</span>工程④　確かめる。数字は、誰でも見に行ける</a></li>
+      </ol>
+    </div>
+
+    <div class="toc-group">
+      <p class="toc-group-label">16〜17章｜作る側の話と、学ぶ順番</p>
+      <ol>
+        <li><a href="#ch16"><span class="n">16</span>作る側の道具の話も、少しだけ</a></li>
+        <li><a href="#ch17"><span class="n">17</span>学ぶ順番。今日、今週、今月</a></li>
+        <li><a href="#owari"><span class="n">＋</span>おわりに</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <section id="ch1">
+    <h2><span class="num">CHAPTER 1</span>この会社は、3つの顔を持っている</h2>
+    <p>先に地図を配ります。ここを押さえると、あとは全部この3つのどれかの話になります。Cloudflareがやっているのは、次の3つです。</p>
+    <ul class="dots">
+      <li>速く届ける</li>
+      <li>危ない客を止める</li>
+      <li>誰を通すか決める</li>
+    </ul>
+    <p>たったこれだけです。Workersも、R2も、Pay per crawlも、全部このどれかの枝分かれでしかありません。そして、<span class="em">いま急に騒がれているのは3番目だけ</span>です。1番目と2番目は10年以上前から続いている本業で、今さらニュースになる話ではありません。</p>
+    <p>つまり、タイムラインに流れている「9月15日」も「AIに読まれなくなる」も、全部3番目の話です。ここを分けて考えないと永遠に混乱します。この記事も、まず1番目と2番目を軽く片づけて、3番目に時間を使います。</p>
+  </section>
+
+  <section id="ch2">
+    <h2><span class="num">CHAPTER 2</span>あの数秒で、何を見られているのか</h2>
+    <p>冒頭に書いた「接続の安全性を確認しています」の画面から始めます。あれが、この会社を理解する一番の近道だからです。</p>
+    <p>あの画面がやっているのは、ボット判定です。サイトを見に来たのが人間なのかボットなのかを、数秒で見分けています。</p>
+    <p>勘違いされやすいので先に書いておくと、あれは訪問者を疑っているわけではありません。サイトの側が「変なボットに荒らされたくない」と思って設置しているものです。守られているのはサイトで、検問されているのが訪問者。あなたは検問される側に立っています。</p>
+    <p>あの検問は、もともと迷惑なボットを止めるために作られました。ところが2026年のいま、検問の対象に「AI」が加わっています。ChatGPTやClaudeが記事を読みに来たとき、通すのか止めるのか。同じ検問所で、判定される相手だけが変わった。それが今この会社が騒がれている理由です。</p>
+    <p>もうひとつ、冒頭の11月18日に戻ります。Cloudflare自身が、2019年以来で最悪の障害だったと認めています。そして原因は、サイバー攻撃ではありませんでした。社内のデータベースの設定を変えたことが引き金で、ボット判定に使うファイルが異常にふくらんだ。それだけのことで、世界中が止まりました。</p>
+    <p>なぜそんなことが起きるのか。答えは次の章のたとえ話で分かります。</p>
+    <p class="src"><strong>出典</strong><br><a href="https://blog.cloudflare.com/18-november-2025-outage/" target="_blank" rel="noopener">https://blog.cloudflare.com/18-november-2025-outage/</a></p>
+  </section>
+
+  <section id="ch3">
+    <h2><span class="num">CHAPTER 3</span>たとえ話：ここは、インターネットの国際空港です</h2>
+    <p>この会社を一言で言うと、<span class="em">インターネットの国際空港</span>です。世界中に空港があって、どの国から来た人も、まずどこかの空港に降ります。そこで初めて、目的地の国に入れます。</p>
+    <p>Cloudflareも同じ形です。世界中に拠点があって、サイトを見に来た人はまずそこを通り、そのあとで目的のサイトに届きます。この形が分かると、3つの顔が全部つながります。</p>
+    <ul class="dots">
+      <li><strong>速く届ける</strong>のは、空港が世界中にあるからです。東京の人は東京の空港から入ります。わざわざ地球の裏まで飛ぶ必要がありません。</li>
+      <li><strong>危ない客を止める</strong>のは、保安検査があるからです。荷物にあやしいものが入っていれば、そこで止まります。目的地の国までは届きません。</li>
+      <li><strong>誰を通すか決める</strong>のが入国審査です。入国審査では、必ず目的を聞かれます。観光ですか。仕事ですか。移住ですか。答えによって、通れるかどうかが変わります。</li>
+    </ul>
+    <p>このあと出てくるAIの話は、全部この入国審査の話です。AIにも「何をしに来たのか」を聞くようになった、という話に着地します。</p>
+    <p>ちなみに、2025年11月18日に世界中のサービスが止まった理由も、この形で説明がつきます。空港が閉鎖されたら、その空港を使っていた便は全部飛べません。入口が閉じれば、誰も入れない。あの日に起きたのは、そういうことでした。</p>
+    <p>便利さと危うさは、いつも同じ場所から出てきます。</p>
+  </section>
+
+  <section id="ch4">
+    <h2><span class="num">CHAPTER 4</span>顔①　速く届ける</h2>
+    <p>ここからは3つの顔を1つずつ見ます。まず1番目です。</p>
+    <p>Cloudflareは、サイトのコピーを世界中の空港に置いています。記事を開くとき、その本体がアメリカにあっても、日本の空港にあるコピーが手渡されます。地球を半周しないので、速い。</p>
+    <p>おまけの効き目もあります。1か所に人が殺到しても、世界中の空港が分担して受け止めるので、サイト本体は倒れません。テレビで紹介されても、落ちにくくなります。</p>
+    <div class="stat">
+      <div class="stat-row">
+        <span class="stat-num">20%超</span>
+        <span class="stat-label">この会社の網の後ろにあるサイトが、Web全体に占める割合（Cloudflare発表）</span>
+      </div>
+    </div>
+    <p>5つに1つ以上です。今日開いたサイトの中にも、ここを通っていたものがあった可能性は十分にあります。名前を知らないまま、毎日使っている。そういう会社です。</p>
+  </section>
+
+  <section id="ch5">
+    <h2><span class="num">CHAPTER 5</span>顔②　危ない客を止める</h2>
+    <p>2番目です。こちらが、この会社のもともとの本業でした。</p>
+    <p>大量のアクセスを一気に送りつけてサーバーを倒す。そういう攻撃を、空港の保安検査で受け止めます。サイト本体まで届かせません。冒頭の「接続の安全性を確認しています」も、この仕事の一部です。</p>
+    <p>ここで、1つ確かめてほしいことがあります。最近、あの画面を見る回数が増えていないでしょうか。増えているとしたら、気のせいではありません。<span class="em">ネットを歩いている相手が、この数年で入れ替わった</span>からです。</p>
+  </section>
+
+  <section id="ch6">
+    <h2><span class="num">CHAPTER 6</span>顔③　誰を通すか決める</h2>
+    <p>3番目です。ここから先が、この記事の本題になります。</p>
+    <p>これまでのボット判定は、単純でした。人間なら通す、迷惑なボットなら止める。二択です。ところが、この二択では処理できない相手が現れました。AIです。</p>
+    <p>AIが読みに来る理由は1つではありません。検索の答えを作るため。学習の材料にするため。誰かに頼まれた用事で来ることもあります。</p>
+    <p>同じAIでも、目的が違う。そして、サイト側にとっては歓迎度がまるで違います。検索なら、そこから読者が来ます。学習なら、使われるだけで誰も来ません。</p>
+    <p>だから、入国審査が要る。人間かAIかではなく、<span class="em">何をしに来たのかで分ける</span>。それが2026年に起きている変化です。</p>
+  </section>
+
+  <section id="ch7">
+    <h2><span class="num">CHAPTER 7</span>ネットを歩いているのは、もう半分が人間じゃない</h2>
+    <p>先に、いちばん驚いた数字を出します。Cloudflareが2026年6月3日に公表したデータでは、こうでした。</p>
+    <div class="stat">
+      <div class="stat-row">
+        <span class="stat-num">57.5%</span>
+        <span class="stat-label">ボット</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-num">42.5%</span>
+        <span class="stat-label">人間</span>
+      </div>
+    </div>
+    <p>初めて、機械が人間を追い抜いています。</p>
+    <div class="note">念のため範囲を書いておきます。インターネット全体の利用者数ではなく、Cloudflareの網で観測されたHTMLへのリクエストに絞った比率です。それでもWeb全体の2割以上が通る網なので、傾向としては十分に効きます。個別のサイトでも同じ比率になるとは限りません。</div>
+    <p>そして、その中身も変わりました。同じくCloudflareの集計では、AIのクローラー（記事を読みに巡回してくるボットのこと）のうち、学習目的のものの割合は<strong>2025年春に22%</strong>でした。それが<strong>2026年6月には52%</strong>です。1年ちょっとで、半分以上が「学習のために来ている」状態になりました。</p>
+    <p>もうひとつ、地味にひどい数字があります。クロールの<strong>50%超</strong>が、内容が1文字も変わっていないページの取り直しでした。同じページを何度も取りに来る。読者は来ない。サーバーだけ動く。</p>
+    <p class="src"><strong>出典</strong><br><a href="https://gihyo.jp/article/2026/07/content-independence-day-one-year-on" target="_blank" rel="noopener">https://gihyo.jp/article/2026/07/content-independence-day-one-year-on</a></p>
+  </section>
+
+  <section id="ch8">
+    <h2><span class="num">CHAPTER 8</span>2,237ページ持っていって、1人だけ返す</h2>
+    <p>もっと直接的な数字があります。Cloudflareは「クロール対リファラ比率」というものを公開しています。ややこしい名前ですが、意味は単純です。<strong>AIが何ページ持っていって、代わりに何人の読者を送り返してきたか。</strong>その比率です。</p>
+    <p>2026年7月21日までの28日間の数字が、こうでした。</p>
+    <div class="stat">
+      <div class="stat-row">
+        <span class="stat-num">2,237 : 1</span>
+        <span class="stat-label">ClaudeBot</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-num">217 : 1</span>
+        <span class="stat-label">GPTBot</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-num">4.6 : 1</span>
+        <span class="stat-label">Google</span>
+      </div>
+    </div>
+    <p>Googleだけ桁が違います。これが今まで成立していた取引でした。検索エンジンに読ませる。代わりに検索結果から読者が来る。だから読ませる価値があった。</p>
+    <p>AIは、この取引の後半がありません。読んで答えを作ってしまえば、読者は元のサイトまで来ない。</p>
+    <div class="note">公平を期すために、もうひとつ数字を出します。2025年6月の同じ調査では、Anthropicの比率は70,900対1でした。1年で、数字は大きく下がっています。<br>ただし、下がった理由までは断定できません。クロールが減ったのか、紹介が増えたのかで意味は変わります。もう1つ、アプリの中から記事が開かれた場合など、どこから来たかの情報が残らないことがあります。その分、送り返した人数は少なめに見えている可能性があります。</div>
+    <p>それでも、桁は変わりません。2,237対1です。この比率は誰でも見られます。Cloudflare Radarという公開ページで、今の数字がそのまま出ています。</p>
+    <p><a class="biglink" href="https://radar.cloudflare.com/ai-insights" target="_blank" rel="noopener">radar.cloudflare.com/ai-insights →</a></p>
+  </section>
+
+  <section id="ch9">
+    <h2><span class="num">CHAPTER 9</span>65.6億円の裁判が、すでに起きている</h2>
+    <p>数字の話をしてきましたが、これは統計の中だけの話ではありません。日本で、もう裁判になっています。</p>
+    <p>2025年8月7日、読売新聞グループ本社が、AI検索サービスのPerplexityを東京地裁に提訴しました。請求額は約21億6,800万円です。記事およそ12万本が無断で使われた、という訴えでした。</p>
+    <p>その19日後、2025年8月26日に、朝日新聞社と日本経済新聞社が同じ会社を共同で提訴しました。それぞれ22億円、合わせて44億円です。</p>
+    <div class="stat">
+      <div class="stat-row">
+        <span class="stat-num">約65.6億円</span>
+        <span class="stat-label">3社の請求額の合計（読売 約21.7億円＋朝日 22億円＋日経 22億円）</span>
+      </div>
+    </div>
+    <p>ここで注目してほしいのは、金額ではありません。争点です。</p>
+    <p>新聞社側は、自社のサイトに「AIは読まないでください」という設定をあらかじめ入れていた、と主張しています。それが無視されて読み取られていた、というのが訴えの中身です。</p>
+    <div class="warn"><b>つまり、こうです。</b>自分で「読むな」と書いておくだけでは、守られたとは限らなかった。</div>
+    <p>なお、この2件は別々の裁判です。読売の訴訟と、朝日・日経の共同訴訟は、それぞれ進んでいます。朝日と日経の裁判では、2026年5月14日に東京地裁で初弁論がありました。Perplexity側は請求の棄却を求め、争う姿勢を示しています。日本の検索と引用の法的な枠組みの中で適切に運営している、という主張です。</p>
+    <p>判決は出ていません。どちらが正しいかは、ここでは書きません。書けるのは1つだけです。<strong>サイト側の意思表示が無視されたかどうかが、いま裁判の場で争われている。</strong></p>
+    <p>その一方で、Cloudflareは意思表示の仕組みだけでなく、インフラの側でアクセスそのものを制御する機能を広げています。9月15日の変更も、この流れの中にあります。</p>
+  </section>
+
+  <section id="ch10">
+    <h2><span class="num">CHAPTER 10</span>9月15日に、入国審査のルールが変わる</h2>
+    <p>ここが、いちばん誤解が広がっている部分です。正確に切り分けます。</p>
+    <p>2026年9月15日から、Cloudflareの初期設定が変わります。広告が表示されているページで、<strong>学習目的とエージェント目的のAIが、初期設定で通れなくなります</strong>。検索目的は、これまでどおり通ります。</p>
+    <p>大事なのは、対象の範囲です。ここが誤解されやすいので、公式の発表から正確に写します。対象は3つあります。</p>
+    <ul class="dots">
+      <li>新しくCloudflareを使い始める顧客</li>
+      <li>既存の顧客が、これから追加するサイト</li>
+      <li>9月15日までに設定を変えていない、既存の無料プラン利用者すべて</li>
+    </ul>
+    <div class="warn"><b>3つ目に注意。</b>何年も前から無料プランで使っていて、設定画面を一度も開いていないサイトにも、この初期設定が降ってきます。つまり「新しく作るサイトだけの話」ではありません。何もしなければ、勝手に適用されます。</div>
+    <p>ただし、全ページが対象になるわけではありません。Cloudflareの判定で、広告が表示されていると見なされたページだけです。変えたくない場合は、9月15日までに設定画面から外せます。逆に言えば、開かなければそのまま適用されます。</p>
+    <p>もうひとつ、9月15日に変わることがあります。<strong>複数の目的を兼ねているAIの扱い</strong>です。検索もするし学習もする、という欲張りなボットは、その全部の行動に応じて判定されるようになります。</p>
+    <p>検索だけのふりをして学習もしていく、が通らなくなる。入国審査で「観光です」と言いながら就職活動をしていた人が、まとめて審査される。そういう変更です。</p>
+    <p class="src"><strong>出典（対象範囲は2本目のプレスリリースに明記）</strong><br>
+      <a href="https://blog.cloudflare.com/content-independence-day-ai-options/" target="_blank" rel="noopener">https://blog.cloudflare.com/content-independence-day-ai-options/</a><br>
+      <a href="https://www.cloudflare.com/press/press-releases/2026/cloudflare-allows-the-agentic-internet-to-flourish-with-a-simple-philosophy-your-content-your-rules/" target="_blank" rel="noopener">https://www.cloudflare.com/press/press-releases/2026/cloudflare-allows-the-agentic-internet-to-flourish-with-a-simple-philosophy-your-content-your-rules/</a>
+    </p>
+  </section>
+
+  <section id="ch11">
+    <h2><span class="num">CHAPTER 11</span>3つの目的の、見分け方</h2>
+    <p>ここまで「学習」「エージェント」「検索」という3つの言葉を使ってきました。ここで一度、はっきり分けておきます。この3つが分かると、ニュースの意味が全部読めるようになります。Cloudflareの定義に、判断の目安を足したものを置いておきます。</p>
+
+    <div class="copybox">
+      <div class="copybox-head">
+        <span class="copybox-title">早見表（コピーして使えます）</span>
+        <button class="copy-btn" type="button">コピー</button>
+      </div>
+      <pre>検索（Search）
+＝質問の答えを作るために、あらかじめ内容を集めて索引を作る動き
+＝許可すると、AIの回答に自分の記事が出る可能性が残る
+＝基本は許可でいい
+
+エージェント（Agent）
+＝誰かの代わりに、その場で用事を片づけに来る動き
+＝サイトの性質によって、歓迎するかどうかが割れる
+＝迷ったら保留でいい
+
+学習（Training）
+＝AIそのものを賢くする材料として、内容を持っていく動き
+＝持っていくだけで、読者は来ない
+＝断るなら、まずここから</pre>
+    </div>
+
+    <p>空港のたとえに戻すと、こうなります。</p>
+
+    <div class="purpose">
+      <h4>検索は観光客<span class="tag tag-yes">基本は許可</span></h4>
+      <p>来て、見て、あとで人を連れてきてくれます。だから歓迎されます。</p>
+    </div>
+    <div class="purpose">
+      <h4>エージェントは代理人<span class="tag tag-hold">迷ったら保留</span></h4>
+      <p>本人の代わりに手続きをしに来ています。歓迎するかどうかは、サイトによって割れます。</p>
+    </div>
+    <div class="purpose">
+      <h4>学習は素材の買い付け<span class="tag tag-no">断るならここから</span></h4>
+      <p>持っていって、二度と来ない。ここが、いちばん揉めている部分です。</p>
+    </div>
+
+    <div class="warn"><b>そして、ここに罠があります。</b><br>「AIは全部ブロック」にすると、検索も止まります。つまりAIの回答に自分の記事が出なくなる。名前を出してもらえる機会を、自分で閉じることになります。逆に「全部許可」にすると、学習にも使われ続けます。</div>
+    <p>だから、<span class="em">分けて答えられる状態にしておく</span>。いまのところ、これが現実的な選択です。では、どうやって分けるのか。ここから先が実務の話です。</p>
+  </section>
+
+  <section id="ch12">
+    <h2><span class="num">CHAPTER 12 ／ 工程①</span>測る。URLを貼るだけ、1分で終わる</h2>
+    <p>ここから4つの工程に入ります。順番に進むと、自分の記事がAIにどう扱われているかが見えるようになります。まず、現在地を知るところからです。</p>
+    <p>Cloudflareは2026年4月17日に、無料の診断ページを公開しました。ログインもアカウント登録もいりません。</p>
+    <p><a class="biglink" href="https://isitagentready.com" target="_blank" rel="noopener">isitagentready.com →</a></p>
+    <p>やることは、サイトのURLを入れてScanを押すだけです。それで0点から100点のスコアが出ます。何を測っているのか。公式によると、次の4分野です。</p>
+    <ul class="dots">
+      <li>見つけられるか（robots.txt やサイトマップが整っているか）</li>
+      <li>機械が読みやすい形式になっているか</li>
+      <li>ボットへの方針を示せているか</li>
+      <li>APIなどの機能をエージェントに公開しているか</li>
+    </ul>
+    <p>支払いに関する規格も確認はされますが、いまのところ点数には入りません。空港のたとえで言えば、案内表示が読めるか、窓口が開いているか、という話です。人間には親切な建物でも、代理人には迷路に見えることがあります。</p>
+    <p>そして地味に効くのが、点数が低かった項目に、<strong>直し方のプロンプトが出てくる</strong>ことです。それをそのままAIに貼れば修正案が返ってきます。手順はこれだけです。</p>
+
+    <div class="copybox">
+      <div class="copybox-head">
+        <span class="copybox-title">今日の手順（1分）</span>
+        <button class="copy-btn" type="button">コピー</button>
+      </div>
+      <pre>1. 診断ページを開く → isitagentready.com
+2. 自分のサイトのURLを入れてScanを押す
+3. 出てきた点数と、赤くなっている項目をメモする
+4. 出てきた修正プロンプトを、Claude や ChatGPT にそのまま貼る</pre>
+    </div>
+
+    <p>自分のサイトを持っていない場合は、よく読むメディアのURLで試してみてください。「いつも読んでいるあのサイトが何点なのか」だけでも、この仕組みの手触りが分かります。</p>
+    <p class="src"><strong>出典（採点の詳細）</strong><br><a href="https://blog.cloudflare.com/agent-readiness/" target="_blank" rel="noopener">https://blog.cloudflare.com/agent-readiness/</a></p>
+  </section>
+
+  <section id="ch13">
+    <h2><span class="num">CHAPTER 13 ／ 工程②</span>伝える。3行書くだけで、目的別に返事ができる</h2>
+    <p>現在地が分かったら、次は意思表示です。そもそもサイトには昔から、<strong>robots.txt</strong> という1枚のメモが置けます。「この部分は読まないでください」と書いておくファイルで、玄関に貼る張り紙のようなものです。</p>
+    <p>ただ、この張り紙には弱点がありました。「読むな」か「読んでいい」の二択しか書けなかったのです。第9章の裁判で争われているのも、まさにこの張り紙が無視されたかどうかでした。</p>
+    <p>そこでCloudflareが2025年9月24日に出したのが、<strong>Content Signals Policy</strong>という仕組みです。同じ張り紙に、目的別の返事を書き足せるようにしました。書ける項目は3つです。</p>
+    <ul class="dots">
+      <li><strong>search</strong>：検索の結果に出すのは、いいですか</li>
+      <li><strong>ai-input</strong>：AIがその場で答えを作るとき、参照していいですか</li>
+      <li><strong>ai-train</strong>：AIそのものを賢くする材料に、使っていいですか</li>
+    </ul>
+    <p>公式が示している書き方が、これです。</p>
+
+    <div class="copybox mono">
+      <div class="copybox-head">
+        <span class="copybox-title">robots.txt に書く3行</span>
+        <button class="copy-btn" type="button">コピー</button>
+      </div>
+      <pre>User-Agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+Allow: /</pre>
+    </div>
+
+    <div class="warn"><b>先に大事なことを。</b>これは、どこかに打ち込んで実行するコマンドではありません。<b>robots.txt という名前のテキストファイルの、中身</b>です。</div>
+    <p>置き場所は、自分のサイトの一番上の階層です。example.com というサイトなら、example.com/robots.txt で開ける場所に置きます。レンタルサーバーの管理画面から置くのが一般的です。</p>
+    <p>そして、置いても画面は何も変わりません。見た目に変化がないので、できたのかどうか分かりにくい。確認したいときは、自分のサイトのアドレスのうしろに <strong>/robots.txt</strong> を付けてブラウザで開いてください。さっきの3行が表示されれば、置けています。</p>
+    <p>意味はこうです。検索には出してください。AIが答えを作るときに参照するのもいいです。ただし、AIの学習の材料に使うのはやめてください。</p>
+    <p>第11章に書いた罠を、この3行で回避しています。ai-train を no にしても、ai-input が yes なら、AIの回答にはこれまでどおり出られる。<span class="em">名前を出してもらう機会は閉じずに、素材として持っていかれるのだけを断る。</span>分けられるようになった、というのはこういうことです。</p>
+
+    <h3>ただし、正直に書いておかないといけないこと</h3>
+    <p>この3行は、<strong>意思表示</strong>です。技術的に遮断する装置ではありません。玄関の張り紙と同じで、読んで従うかどうかは相手次第です。Cloudflare自身も、無視する会社があり得ることを認めています。Googleの担当者にいたっては、この書き方はどのクローラーにもAIにも効果がない、と公の場で言っています。</p>
+    <p>では意味がないのか。そうでもありません。第9章の裁判を思い出してください。争点は「拒否の意思を示していたのに使われた」でした。意思を、機械が読める形で、目的別に、はっきり残しておく。少なくとも、自分の方針を示したという記録にはなります。ただし、この記述にどんな法的効果があるのかまでは、ここでは断定しません。</p>
+    <p>そして、実際に止めたいなら別の手段が要ります。整理すると、こうなります。</p>
+    <ul class="dots">
+      <li><strong>robots.txt の3行</strong>：意思を伝える</li>
+      <li><strong>Cloudflareの設定画面</strong>：実際に止める</li>
+      <li><strong>Bot Preference Sync</strong>：この2つを揃える</li>
+    </ul>
+    <p>張り紙だけでは止まりません。止めるのは検問所の仕事です。ここを混ぜて理解すると、書いたのに止まっていない、という事故が起きます。</p>
+    <div class="note">この3行の仕組みはCC0という扱いで公開されていて、誰でも自由に使えます。Cloudflareを使っていないサイトでも書けます。<br>ただし正直に書くと、自分でサーバーやサイトの設定を触れる人でないと、この3行は置けません。既存のブログサービスや記事投稿サービスで書いている場合、robots.txt はその会社が管理しています。つまり、この工程は全員ができるものではありません。<b>できる人は今日やってください。できない人は、次の工程が本番になります。</b></div>
+    <p>もうひとつ、Cloudflareは2026年8月21日に <strong>Bot Preference Sync</strong> という仕組みを発表しました。全プラン向けに、翌週から提供すると案内されています。これは、設定画面でのAI方針と、robots.txt の張り紙がズレていた問題を自動で揃えてくれるものです。張り紙には「読むな」と書いてあるのに、実際の検問では通していた。そういう食い違いが、手作業では起きていました。こちらも無料プランを含む全ユーザーが対象です。</p>
+    <p class="src"><strong>出典</strong><br>
+      <a href="https://blog.cloudflare.com/content-signals-policy/" target="_blank" rel="noopener">https://blog.cloudflare.com/content-signals-policy/</a><br>
+      <a href="https://blog.cloudflare.com/bot-preference-sync/" target="_blank" rel="noopener">https://blog.cloudflare.com/bot-preference-sync/</a>
+    </p>
+  </section>
+
+  <section id="ch14">
+    <h2><span class="num">CHAPTER 14 ／ 工程③</span>直す。人にもAIにも読み取りやすい形にする</h2>
+    <p>3つ目です。ここが、書いている人にとって一番効く工程になります。ai-input を yes にしたところで、AIが引用してくれるとは限りません。<span class="em">許可は入場券であって、当選券ではない</span>からです。</p>
+    <p>では、何が選ばれるのか。記事が使われるには、まず見つけられて、中身を読み取られる必要があります。そのうえで、答えに使える部分が取り出しやすい形になっているほうが扱いやすいはずです。</p>
+    <p>見つけてもらえない記事は、そもそも土俵に上がりません。読めない記事も落ちます。画像の中にだけ結論が書いてあるとか、開くのに何段階も操作が要るとか。人間には見えていても、代理人には見えないことがあります。そして、切り出せない記事が一番多い。結論が最後まで出てこない記事は、答えとして使いにくいのです。</p>
+    <div class="note">先に断っておくと、ここから先の5項目はCloudflare公式の採点基準ではありません。Agent Readinessの考え方を、記事を書く側の作業に置き換えたものです。この形にすれば引用される、と実測したわけでもありません。</div>
+    <p>そのうえで、自分の記事を1本開いて確かめてみてください。</p>
+
+    <div class="copybox">
+      <div class="copybox-head">
+        <span class="copybox-title">記事チェック5項目</span>
+        <button class="copy-btn" type="button">コピー</button>
+      </div>
+      <pre>・最初の300字以内に、結論が文章で書いてあるか
+・その結論は、画像ではなく文字になっているか
+・見出しだけを拾って読んで、意味が通るか
+・数字や固有名詞に、出典と日付が添えてあるか
+・1つの見出しの下で、1つのことだけを言い切っているか</pre>
+    </div>
+
+    <p>5つとも、人間の読者にとっても良い記事の条件です。ここが救いのある部分でした。AI向けに書き方を歪める必要はありません。結論を先に出す、見出しで意味を通す、出典を書く。それだけです。</p>
+    <p>ちなみに、この工程はブログサービスで書いている人でもできます。robots.txt は触れなくても、書き方は自分の手の中にあるからです。</p>
+  </section>
+
+  <section id="ch15">
+    <h2><span class="num">CHAPTER 15 ／ 工程④</span>確かめる。数字は、誰でも見に行ける</h2>
+    <p>最後の工程です。ここまでやったら、実際にどうなっているかを見に行きます。第8章で出した比率は、Cloudflareが誰にでも公開しているデータでした。</p>
+    <p><a class="biglink" href="https://radar.cloudflare.com/ai-insights" target="_blank" rel="noopener">radar.cloudflare.com/ai-insights →</a></p>
+    <p>このページを開くと、今この瞬間のAIクローラーの動きがグラフで出ています。どの会社のボットが、どれくらい来ていて、どれくらい人を返しているか。英語のページですが、見るのはグラフなので数字は読めます。ブラウザの翻訳機能を使えば項目名も日本語になります。</p>
+    <p>そしてもうひとつ、2026年8月7日に無料のベータ版が公開されました。<strong>Radar Researcher</strong> という道具で、Radarのページの上部から開けます。普通の言葉で質問すると、グラフで答えが返ってきます。たとえば、こういう聞き方です。</p>
+
+    <div class="copybox mono">
+      <div class="copybox-head">
+        <span class="copybox-title">Radar Researcher への質問例</span>
+        <button class="copy-btn" type="button">コピー</button>
+      </div>
+      <pre>Show me the crawl-to-refer ratio for AI bots over the last 3 months
+Which AI crawlers send the most referral traffic?
+How has bot traffic changed compared to human traffic this year?</pre>
+    </div>
+
+    <p>記事のネタ探しにも使えます。他の人が持っていない数字を、公式のデータから直接引っ張ってこられるからです。</p>
+    <div class="note">この道具は執筆時点でベータ版で、日本語での質問がどこまで通るかは確かめていません。英語で聞く前提で書いています。</div>
+  </section>
+
+  <section id="ch16">
+    <h2><span class="num">CHAPTER 16</span>作る側の道具の話も、少しだけ</h2>
+    <p>ここまでは「読まれる側」の話でした。最後に、もう一つの顔にも触れておきます。Cloudflareは、サイトやアプリを動かす場所も貸しています。タイムラインで見かける用語の大半は、こちらの話です。</p>
+    <ul class="dots">
+      <li><strong>Workers</strong>：プログラムを置いて動かす場所</li>
+      <li><strong>D1</strong>：記録を残す帳簿</li>
+      <li><strong>R2</strong>：画像や動画をしまう倉庫</li>
+      <li><strong>KV</strong>：小さなメモを貼る場所</li>
+    </ul>
+    <p>空港でいえば、空港の中にテナントとして店を出せる、という話です。入国審査とは別の商売になります。それぞれに無料の枠がありますが、上限も課金の単位もサービスごとに違うので、実際に使うときは公式の料金ページを確認してください。</p>
+    <p>ただし、こちらは自分でプログラムを動かす人の領域です。この記事の読者の多くには、まだ早い話だと思います。すでに詳しい解説がいくつも出ているので、作る側に回りたくなったら、そちらを探すほうが早いはずです。</p>
+    <div class="warn"><b>この記事で押さえておいてほしいのは、1つだけです。</b>タイムラインに流れてくるCloudflareの話には、まったく別の2つが混ざっている。<b>読まれる側の話</b>と、<b>作る側の話</b>です。自分に関係があるのがどちらなのかを分けられれば、もう混乱しません。</div>
+  </section>
+
+  <section id="ch17">
+    <h2><span class="num">CHAPTER 17</span>学ぶ順番。今日、今週、今月</h2>
+    <p>最後に、順番を置いておきます。全部を一度にやる必要はありません。</p>
+
+    <h3>今日やること</h3>
+    <div class="copybox">
+      <div class="copybox-head">
+        <span class="copybox-title">5分で終わります</span>
+        <button class="copy-btn" type="button">コピー</button>
+      </div>
+      <pre>1. 自分のサイトか、よく読むサイトのURLを診断ページに入れる → isitagentready.com
+2. 出た点数を見る
+3. 今の比率を1つ見る → radar.cloudflare.com/ai-insights</pre>
+    </div>
+    <p>ここまでで5分もかかりません。この記事の内容が、数字として目の前に出てきます。</p>
+
+    <h3>今週やること</h3>
+    <ol class="steps">
+      <li>サイトの設定を触れる人は、第13章の3行を robots.txt に置く。</li>
+      <li>触れない人は、使っているサービスがどういう方針なのかを一度確認する。</li>
+      <li>自分の記事を1本開いて、第14章の5項目を確かめる。</li>
+    </ol>
+
+    <h3>今月やること</h3>
+    <p>新しく書く記事から、結論を先に出す形に変えていきます。これは一度身につけば、ずっと効きます。</p>
+
+    <h3>9月15日について、ひとつだけ補足</h3>
+    <p>この日を過ぎたら何かが壊れる、という話ではありません。ただ、変わることは2つあります。</p>
+    <ul class="checks">
+      <li><strong>初期設定</strong>。新しく作るサイトだけでなく、設定を変えていない既存の無料プラン利用者も対象になります。</li>
+      <li><strong>複数の目的を兼ねるボットの判定方法</strong>。すでに学習を断っているサイトでは、検索も兼ねているボットまで巻き込んで止まる可能性があります。</li>
+    </ul>
+    <p>どちらも「自分は関係ない」で済ませられません。ただ、この日は分かりやすい区切りになります。Webの取引条件が変わりつつあることを、はっきり示した日として記録されるはずです。</p>
+  </section>
+
+  <section id="owari" class="closing">
+    <h2>おわりに</h2>
+    <p>長くなったので、まとめます。Cloudflareは、インターネットの国際空港でした。速く届けて、危ない客を止めて、誰を通すか決めています。</p>
+    <p>そして2026年、決める相手が人間からAIに移りました。ネットを歩く57.5%が、もう機械です。2,237ページ持っていって1人返す、という一方通行が起きています。65.6億円の裁判にもなりました。読むなと書いておくだけでは、守られなかったからです。</p>
+    <p>だから、目的別に返事ができる仕組みが作られました。9月15日に、その初期設定が変わります。やることは4つでした。<strong>測って、伝えて、直して、確かめる。</strong></p>
+    <p>最後に一つだけ。この記事で一番おいしい話は、実は第14章でした。<span class="em">AIに引用されるための条件が、人間にとって読みやすい記事の条件と、ほぼ同じだった</span>ことです。</p>
+    <p>小手先の対策はいりません。結論と出典を、先に文字で出す。それだけで、人にも機械にも読み取りやすくなります。</p>
+    <p>今日、URLを1つ貼るところから始めてください。</p>
+  </section>
+
+</div>
+
+<footer class="site-footer">
+  記事内の数字・仕様は2026年8月27日時点の公式発表にもとづきます。<br>
+  動きの速い分野です。実際に設定を変えるときは、必ず公式ページで最新の状態を確認してください。
+</footer>
+
+<button class="to-top" type="button" id="toTop" aria-label="ページ上部へ戻る">↑</button>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = btn.closest('.copybox').querySelector('pre');
+    var text = pre.innerText;
+    var done = function () {
+      btn.textContent = 'コピーしました';
+      btn.classList.add('done');
+      setTimeout(function () {
+        btn.textContent = 'コピー';
+        btn.classList.remove('done');
+      }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+    } else {
+      fallback(text, done);
+    }
+  });
+});
+
+function fallback(text, done) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+var toTop = document.getElementById('toTop');
+window.addEventListener('scroll', function () {
+  toTop.classList.toggle('show', window.scrollY > 600);
+}, { passive: true });
+toTop.addEventListener('click', function () {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+</body>
+</html>
