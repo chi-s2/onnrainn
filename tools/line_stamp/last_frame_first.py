@@ -40,7 +40,10 @@ except ImportError:  # pragma: no cover
 # ---- LINE アニメーションスタンプの規格 -------------------------------------
 MAX_W, MAX_H = 320, 270
 MIN_FRAMES, MAX_FRAMES = 5, 20
-MIN_TOTAL_MS, MAX_TOTAL_MS = 1000, 4000
+# 再生時間は「ループ込みで 1/2/3/4 秒ぴったり」。
+# つまり  1ループの長さ × ループ回数 = 1000/2000/3000/4000ms  でなければならない。
+ALLOWED_TOTAL_MS = (1000, 2000, 3000, 4000)
+ALLOWED_LOOPS = (1, 2, 3, 4)
 MAX_BYTES = 300 * 1024
 MIN_FRAME_MS = 20  # ブラウザ/端末が無視しない下限
 
@@ -176,24 +179,58 @@ def _pad_frames(clip: Clip, lo: int) -> Clip:
     return Clip(frames, [max(1, int(d)) for d in durations])
 
 
-def fit_duration(clip: Clip) -> Clip:
-    """総再生時間を 1〜4 秒に収める。"""
-    total = clip.total_ms
-    n = len(clip.durations)
-    floor_total = MIN_FRAME_MS * n
-    target = min(max(total, MIN_TOTAL_MS, floor_total), MAX_TOTAL_MS)
-    if target < floor_total:  # コマ数が多すぎて 4 秒に収まらないケースは起きない
-        target = floor_total
-    if total == target:
-        return clip
-    scale = target / total if total else 1
-    scaled = [max(MIN_FRAME_MS, round(d * scale)) for d in clip.durations]
-    # 丸め誤差を最長コマで吸収する。
-    diff = target - sum(scaled)
-    if diff:
-        i = max(range(n), key=lambda k: scaled[k])
-        scaled[i] = max(MIN_FRAME_MS, scaled[i] + diff)
-    return Clip(clip.frames, scaled)
+def choose_timing(natural_ms: int, n_frames: int,
+                  loop: int | None, seconds: int | None) -> tuple[int, int]:
+    """(ループ込みの総秒数, ループ回数) を決める。
+
+    LINE は「1ループの長さ × ループ回数」が 1/2/3/4 秒ぴったりであることを求める。
+    元素材の速さ（1ループの長さ）にいちばん近い組み合わせを選ぶ。
+    """
+    floor_ms = MIN_FRAME_MS * n_frames
+    cands = [
+        (total, lp)
+        for total in ALLOWED_TOTAL_MS
+        for lp in ALLOWED_LOOPS
+        if (seconds is None or total == seconds * 1000)
+        and (loop is None or lp == loop)
+        and total / lp >= floor_ms
+    ]
+    if not cands:
+        raise SystemExit(
+            f"{n_frames}コマだと指定の再生時間・ループ回数に収まりません。"
+            "コマ数を減らすか、--seconds / --loop を見直してください。"
+        )
+    # 1ループの長さが元素材に近いものを優先。同点ならループ回数が多いほうを選ぶ。
+    total, lp = min(cands, key=lambda c: (abs(c[0] / c[1] - natural_ms), -c[1]))
+    return total, lp
+
+
+def _rescale_exact(durations: list, target: int) -> list:
+    """各コマの比率を保ったまま、合計をちょうど target ms にする。"""
+    total = sum(durations) or 1
+    raw = [d * target / total for d in durations]
+    out = [max(MIN_FRAME_MS, int(r)) for r in raw]
+    diff = target - sum(out)
+    order = sorted(range(len(raw)), key=lambda i: raw[i] - int(raw[i]), reverse=True)
+    i = 0
+    while diff > 0:                      # 端数を小数部が大きいコマから配る
+        out[order[i % len(order)]] += 1
+        diff -= 1
+        i += 1
+    while diff < 0:                      # 超過分は長いコマから削る
+        j = max(range(len(out)), key=lambda k: out[k])
+        if out[j] <= MIN_FRAME_MS:
+            break
+        out[j] -= 1
+        diff += 1
+    return out
+
+
+def fit_duration(clip: Clip, loop: int | None, seconds: int | None) -> tuple[Clip, int, int]:
+    """ループ込みの再生時間を 1/2/3/4 秒ぴったりに合わせる。"""
+    total, lp = choose_timing(clip.total_ms, len(clip.frames), loop, seconds)
+    per_loop = round(total / lp)
+    return Clip(clip.frames, _rescale_exact(clip.durations, per_loop)), lp, total
 
 
 def fit_size(clip: Clip, max_w: int = MAX_W, max_h: int = MAX_H) -> Clip:
@@ -261,10 +298,13 @@ def save_apng(clip: Clip, out: Path, loop: int, max_bytes: int) -> tuple[int, st
 # ---- レポート ---------------------------------------------------------------
 def report(path: Path) -> None:
     im = Image.open(path)
+    loop = int(im.info.get("loop", 1) or 1)
     frames = [p.copy() for p in ImageSequence.Iterator(im)]
     durations = [int(p.info.get("duration", 0) or 0) for p in frames]
     w, h = frames[0].size
     size = path.stat().st_size
+    per_loop = sum(durations)
+    played = per_loop * loop
 
     def mark(ok: bool) -> str:
         return "OK  " if ok else "NG  "
@@ -274,8 +314,11 @@ def report(path: Path) -> None:
           f"サイズ      {w}x{h}  (320x270以内・偶数)")
     print(f"  {mark(MIN_FRAMES <= len(frames) <= MAX_FRAMES)}"
           f"コマ数      {len(frames)}コマ  (5〜20)")
-    print(f"  {mark(MIN_TOTAL_MS <= sum(durations) <= MAX_TOTAL_MS)}"
-          f"再生時間    {sum(durations) / 1000:.2f}秒  (1〜4秒)")
+    print(f"  {mark(loop in ALLOWED_LOOPS)}"
+          f"ループ      {loop}回  (1〜4回)")
+    print(f"  {mark(played in ALLOWED_TOTAL_MS)}"
+          f"再生時間    {per_loop / 1000:.3f}秒 x {loop}回 = {played / 1000:g}秒"
+          f"  (ループ込みで1/2/3/4秒ぴったり)")
     print(f"  {mark(size <= MAX_BYTES)}"
           f"ファイル    {size / 1024:.1f}KB  (300KB以内)")
     print("      1コマ目    = トーク画面に残り続けるコマ（決めポーズか確認）")
@@ -297,7 +340,10 @@ def main(argv=None) -> int:
                     help="決めポーズのコマ番号。1始まり、負数で末尾から。既定は最終コマ(-1)")
     ap.add_argument("--fps", type=float,
                     help="連番PNG・動画のfps。アニメ画像に指定すると表示時間を上書き")
-    ap.add_argument("--loop", type=int, default=4, help="ループ回数 1〜4（既定4）")
+    ap.add_argument("--loop", type=int, choices=ALLOWED_LOOPS,
+                    help="ループ回数 1〜4。未指定なら元素材の速さに近い組み合わせを自動選択")
+    ap.add_argument("--seconds", type=int, choices=(1, 2, 3, 4),
+                    help="ループ込みの再生時間（秒）。未指定なら自動選択")
     ap.add_argument("--max-bytes", type=int, default=MAX_BYTES, help="上限バイト数（既定307200）")
     ap.add_argument("--size", default=f"{MAX_W}x{MAX_H}",
                     help="収める最大サイズ WxH（既定320x270。メイン画像なら240x240）")
@@ -322,9 +368,12 @@ def main(argv=None) -> int:
 
     pose = args.pose_frame - 1 if args.pose_frame > 0 else args.pose_frame
     clip = move_pose_to_front(clip, args.mode, pose)
+    loop, played = max(ALLOWED_LOOPS), None
     if not args.keep_timing:
         clip = fit_frame_count(clip)
-        clip = fit_duration(clip)
+        clip, loop, played = fit_duration(clip, args.loop, args.seconds)
+    elif args.loop:
+        loop = args.loop
     if not args.keep_size:
         try:
             max_w, max_h = (int(v) for v in args.size.lower().split("x"))
@@ -333,11 +382,13 @@ def main(argv=None) -> int:
         clip = fit_size(clip, max_w, max_h)
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    size, how = save_apng(clip, out, max(1, min(4, args.loop)), args.max_bytes)
+    size, how = save_apng(clip, out, loop, args.max_bytes)
 
     print(f"読み込み  {args.input}  ({before}コマ)")
     label = "最終コマ" if args.pose_frame == -1 else f"{args.pose_frame}コマ目"
     print(f"1コマ目   元の{label}（mode={args.mode}）")
+    if played:
+        print(f"再生時間  {clip.total_ms / 1000:.3f}秒 x {loop}回 = {played / 1000:g}秒")
     print(f"書き出し  {out}  [{how}]")
     report(out)
     return 0 if size <= args.max_bytes else 1
