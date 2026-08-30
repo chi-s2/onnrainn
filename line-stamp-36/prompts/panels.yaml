@@ -1,0 +1,237 @@
+# LINEスタンプ36コマ定義（デフォルト＝日常会話セット）
+# このファイルを書き換えて build_prompt.py を実行すると、
+# ChatGPT（GPT-Image-2）に貼り付けるプロンプトが出力される。
+
+characters:
+  character_1:
+    name: 添付画像1
+    description: |
+      可愛く、元気な印象。
+  character_2:
+    name: 添付画像2
+    description: |
+      表情豊かで、Character1の隣や肩の上などにいて、同調または補足的に動作や表情をする。
+
+style:
+  background: 白
+  layout: 3列×3行 × 4セット（全36コマ）
+  outline: 柔らかい線画、デフォルメ調
+  text_style: 手書き風、感情に応じた色付き（太字）
+  atmosphere: 明るくかわいいLINEスタンプ風
+
+panels:
+  - position: 1セット目 左上
+    text: おはよ〜
+    text_color: 黄色
+    char1_pose: 手を振る元気な挨拶、笑顔
+    char2_pose: 羽を振って一緒に挨拶
+
+  - position: 1セット目 中央上
+    text: ありがとっ！
+    text_color: オレンジ
+    char1_pose: 軽くお辞儀、目を細めた笑顔
+    char2_pose: 両手を合わせてぺこり
+
+  - position: 1セット目 右上
+    text: おつかれさま〜
+    text_color: 青
+    char1_pose: 敬礼ポーズ、微笑み
+    char2_pose: 肩の上で敬礼
+
+  - position: 1セット目 左中
+    text: OKだよ〜
+    text_color: 黄緑
+    char1_pose: 親指を立てて笑顔
+    char2_pose: にこにこ＋キラキラの星
+
+  - position: 1セット目 中央中
+    text: ごめーん
+    text_color: 青
+    char1_pose: 困り顔＋両手合わせて謝罪
+    char2_pose: 頭を下げてしゅんとする
+
+  - position: 1セット目 右中
+    text: いま行くー！
+    text_color: 赤
+    char1_pose: 走っている、元気な笑顔
+    char2_pose: 一緒に跳ねながらついていく
+
+  - position: 1セット目 左下
+    text: よろしくね
+    text_color: ピンク
+    char1_pose: 丁寧にお辞儀、微笑み
+    char2_pose: 横でぺこりとお辞儀
+
+  - position: 1セット目 中央下
+    text: おやすみ〜
+    text_color: 紫
+    char1_pose: 枕を抱えて眠そうな顔、あくび
+    char2_pose: ナイトキャップを被ってウトウト
+
+  - position: 1セット目 右下
+    text: またね！
+    text_color: オレンジ
+    char1_pose: 大きく手を振って見送る
+    char2_pose: 寂しそうに小さく羽を振る
+
+  - position: 2セット目 左上
+    text: えっ！？まじで？
+    text_color: 水色
+    char1_pose: 驚き顔（目を丸く、口をあける）
+    char2_pose: 驚き表情＋汗マーク
+
+  - position: 2セット目 中央上
+    text: ちょっと〜！！
+    text_color: オレンジ＋青
+    char1_pose: 両手を広げて叫ぶ、焦り顔
+    char2_pose: 焦ってタジタジ（汗マーク）
+
+  - position: 2セット目 右上
+    text: やったー！
+    text_color: 赤
+    char1_pose: 両手を上げてジャンプ、満面の笑み
+    char2_pose: 万歳して一緒に喜ぶ
+
+  - position: 2セット目 左中
+    text: むかっ
+    text_color: 赤
+    char1_pose: 頬を膨らませて腕組み、怒り顔
+    char2_pose: プイッとそっぽを向く
+
+  - position: 2セット目 中央中
+    text: ぴえん
+    text_color: 青
+    char1_pose: ウルウルした瞳で泣きそう
+    char2_pose: 大号泣して地面を叩く
+
+  - position: 2セット目 右中
+    text: じーっ
+    text_color: グレー
+    char1_pose: 壁の影から覗き込む、真顔
+    char2_pose: 肩の上で双眼鏡を覗く
+
+  - position: 2セット目 左下
+    text: わくわく♪
+    text_color: ピンク
+    char1_pose: 頬を染めて期待に満ちた顔
+    char2_pose: 目をキラキラさせて待機
+
+  - position: 2セット目 中央下
+    text: なるほど！
+    text_color: 黄色
+    char1_pose: ポンと手を打つ、ひらめき顔
+    char2_pose: ウンウンと深く頷く
+
+  - position: 2セット目 右下
+    text: それな
+    text_color: 緑
+    char1_pose: ビシッと指を差す、ドヤ顔
+    char2_pose: 横で全力の頷き
+
+  - position: 3セット目 左上
+    text: がんばれー！
+    text_color: オレンジ
+    char1_pose: 拳を握ってエールを送る
+    char2_pose: 旗を一生懸命振る
+
+  - position: 3セット目 中央上
+    text: お願いっ
+    text_color: ピンク
+    char1_pose: 両手を合わせて上目遣い
+    char2_pose: 一緒に拝むポーズ
+
+  - position: 3セット目 右上
+    text: 了解です！
+    text_color: 緑
+    char1_pose: ビシッと敬礼、キリッとした笑顔
+    char2_pose: Character1の頭の上で敬礼
+
+  - position: 3セット目 左中
+    text: 無理〜！！
+    text_color: 青
+    char1_pose: 両手でバツ印、白目をむく
+    char2_pose: 泡を吹いて倒れている
+
+  - position: 3セット目 中央中
+    text: 大丈夫？
+    text_color: 黄緑
+    char1_pose: 覗き込むように心配そうな顔
+    char2_pose: 背中をポンポン叩く
+
+  - position: 3セット目 右中
+    text: ぱちぱちぱち
+    text_color: オレンジ
+    char1_pose: 笑顔で拍手、キラキラマーク
+    char2_pose: 羽を叩いて一緒に拍手
+
+  - position: 3セット目 左下
+    text: おめでとう！
+    text_color: 赤
+    char1_pose: クラッカーを鳴らす、大喜び
+    char2_pose: 紙吹雪をまいて祝福
+
+  - position: 3セット目 中央下
+    text: 楽しみ〜！
+    text_color: ピンク
+    char1_pose: スキップしている、楽しそうな顔
+    char2_pose: 浮き輪を持って準備万端
+
+  - position: 3セット目 右下
+    text: さすが！
+    text_color: 黄色
+    char1_pose: 両手で親指を立てる
+    char2_pose: 「NO.1」の看板を掲げる
+
+  - position: 4セット目 左上
+    text: はらぺこ…
+    text_color: 茶色
+    char1_pose: お腹を押さえて力尽きそう
+    char2_pose: 空の皿とスプーンを持って待機
+
+  - position: 4セット目 中央上
+    text: もぐもぐ
+    text_color: オレンジ
+    char1_pose: 頬張って幸せそうな顔
+    char2_pose: 一緒に好物を食べている
+
+  - position: 4セット目 右上
+    text: 休憩中〜
+    text_color: 緑
+    char1_pose: お茶を飲んでホッとする
+    char2_pose: 湯呑みを抱えてのんびり
+
+  - position: 4セット目 左中
+    text: チラッ
+    text_color: グレー
+    char1_pose: 画面の端からひょっこり出す
+    char2_pose: Character1の下からひょっこり
+
+  - position: 4セット目 中央中
+    text: 逃げろー！
+    text_color: 青
+    char1_pose: 砂煙を上げて全力疾走
+    char2_pose: 必死に後ろからついていく
+
+  - position: 4セット目 右中
+    text: 準備中…
+    text_color: 黄色
+    char1_pose: 鏡の前で身支度、真剣な顔
+    char2_pose: ブラシを持って手伝うふり
+
+  - position: 4セット目 左下
+    text: 到着っ！
+    text_color: 赤
+    char1_pose: 目的地でポーズ、達成感のある顔
+    char2_pose: 地図を広げてピース
+
+  - position: 4セット目 中央下
+    text: ぐったり
+    text_color: 青
+    char1_pose: 床にのの字を書いて落ち込む
+    char2_pose: 氷嚢を頭に乗せてダウン
+
+  - position: 4セット目 右下
+    text: ぺこり
+    text_color: 黒
+    char1_pose: 丁寧にお辞儀、感謝の表情
+    char2_pose: 帽子を脱いで一緒にお辞儀

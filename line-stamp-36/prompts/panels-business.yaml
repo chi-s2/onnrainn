@@ -1,0 +1,236 @@
+# LINEスタンプ36コマ定義（ビジネス／仕事チャット用）
+# 使い方: python3 scripts/build_prompt.py --panels prompts/panels-business.yaml
+
+characters:
+  character_1:
+    name: 添付画像1
+    description: |
+      清潔感があり、落ち着いた印象。仕事相手に送っても失礼にならない表情。
+  character_2:
+    name: 添付画像2
+    description: |
+      Character1の隣や肩の上にいて、同調または補足的に動作や表情をする小さな相棒。
+
+style:
+  background: 白
+  layout: 3列×3行 × 4セット（全36コマ）
+  outline: 柔らかい線画、デフォルメ調
+  text_style: 手書き風だが読みやすい、落ち着いた色味（太字）
+  atmosphere: 清潔感のあるビジネス向けLINEスタンプ風
+
+panels:
+  - position: 1セット目 左上
+    text: お疲れ様です
+    text_color: 紺色
+    char1_pose: 軽く会釈、穏やかな笑顔
+    char2_pose: 横でぺこりとお辞儀
+
+  - position: 1セット目 中央上
+    text: おはようございます
+    text_color: 黄色
+    char1_pose: 手を上げて挨拶、爽やかな笑顔
+    char2_pose: 羽を振って一緒に挨拶
+
+  - position: 1セット目 右上
+    text: 承知しました
+    text_color: 緑
+    char1_pose: 手帳にメモを取る、真剣な表情
+    char2_pose: 深く頷く
+
+  - position: 1セット目 左中
+    text: ありがとうございます
+    text_color: オレンジ
+    char1_pose: 両手を胸の前で合わせて感謝
+    char2_pose: 一緒にぺこり
+
+  - position: 1セット目 中央中
+    text: ご確認お願いします
+    text_color: 青
+    char1_pose: 書類を差し出す、丁寧な姿勢
+    char2_pose: 書類の角を持って手伝う
+
+  - position: 1セット目 右中
+    text: 了解です！
+    text_color: 緑
+    char1_pose: ビシッと敬礼、キリッとした笑顔
+    char2_pose: Character1の頭の上で敬礼
+
+  - position: 1セット目 左下
+    text: 対応中です
+    text_color: 黄色
+    char1_pose: ノートPCに向かって作業中
+    char2_pose: 横でキーボードを叩くふり
+
+  - position: 1セット目 中央下
+    text: 少々お待ちください
+    text_color: グレー
+    char1_pose: 片手を軽く前に出して制止、微笑み
+    char2_pose: 砂時計を持って待機
+
+  - position: 1セット目 右下
+    text: 失礼します
+    text_color: 紺色
+    char1_pose: ドアの前で会釈
+    char2_pose: 帽子を取って一緒に会釈
+
+  - position: 2セット目 左上
+    text: 確認します
+    text_color: 青
+    char1_pose: 虫めがねで書類を覗き込む
+    char2_pose: 一緒に覗き込む
+
+  - position: 2セット目 中央上
+    text: 完了しました！
+    text_color: 赤
+    char1_pose: チェックマークの札を掲げる、達成感
+    char2_pose: 万歳して喜ぶ
+
+  - position: 2セット目 右上
+    text: 助かりました
+    text_color: ピンク
+    char1_pose: ホッとした表情で会釈
+    char2_pose: 胸をなでおろす
+
+  - position: 2セット目 左中
+    text: すみません
+    text_color: 青
+    char1_pose: 困り顔で両手を合わせて謝罪
+    char2_pose: しゅんと頭を下げる
+
+  - position: 2セット目 中央中
+    text: よろしくお願いします
+    text_color: ピンク
+    char1_pose: 深めのお辞儀、丁寧な表情
+    char2_pose: 横で同じ角度でお辞儀
+
+  - position: 2セット目 右中
+    text: 検討します
+    text_color: グレー
+    char1_pose: 顎に手を当てて考え込む
+    char2_pose: 同じポーズで考える
+
+  - position: 2セット目 左下
+    text: 助言お願いします
+    text_color: 水色
+    char1_pose: 両手を合わせて上目遣いでお願い
+    char2_pose: 一緒に拝むポーズ
+
+  - position: 2セット目 中央下
+    text: 共有しますね
+    text_color: 緑
+    char1_pose: スマホの画面を相手に見せる
+    char2_pose: 画面を指差す
+
+  - position: 2セット目 右下
+    text: 資料できました
+    text_color: オレンジ
+    char1_pose: 分厚い資料を抱えて笑顔
+    char2_pose: 一番上の一枚を持って運ぶ
+
+  - position: 3セット目 左上
+    text: 本日はありがとうございました
+    text_color: オレンジ
+    char1_pose: 丁寧なお辞儀、感謝の表情
+    char2_pose: 帽子を脱いで一緒にお辞儀
+
+  - position: 3セット目 中央上
+    text: 承知いたしました
+    text_color: 紺色
+    char1_pose: 背筋を伸ばして一礼
+    char2_pose: きちんと整列して一礼
+
+  - position: 3セット目 右上
+    text: お先に失礼します
+    text_color: 紫
+    char1_pose: 鞄を持って手を振る
+    char2_pose: 小さく羽を振って見送る
+
+  - position: 3セット目 左中
+    text: 遅れます…
+    text_color: 青
+    char1_pose: 走りながら焦った顔、汗マーク
+    char2_pose: 時計を持って必死についていく
+
+  - position: 3セット目 中央中
+    text: 大丈夫ですか？
+    text_color: 黄緑
+    char1_pose: 覗き込むように心配そうな顔
+    char2_pose: 背中をポンポン叩く
+
+  - position: 3セット目 右中
+    text: ナイスです！
+    text_color: 黄色
+    char1_pose: 両手で親指を立てる
+    char2_pose: 「Good」の看板を掲げる
+
+  - position: 3セット目 左下
+    text: おめでとうございます
+    text_color: 赤
+    char1_pose: クラッカーを鳴らして祝福
+    char2_pose: 紙吹雪をまく
+
+  - position: 3セット目 中央下
+    text: 楽しみにしています
+    text_color: ピンク
+    char1_pose: 胸の前で手を組んで期待の表情
+    char2_pose: 目をキラキラさせて待機
+
+  - position: 3セット目 右下
+    text: 助かります
+    text_color: 黄緑
+    char1_pose: 笑顔で軽く拝む
+    char2_pose: 一緒に拝む
+
+  - position: 4セット目 左上
+    text: 休憩します
+    text_color: 緑
+    char1_pose: コーヒーを持ってひと息
+    char2_pose: 湯呑みを抱えてのんびり
+
+  - position: 4セット目 中央上
+    text: 会議中です
+    text_color: グレー
+    char1_pose: 口の前に指を立てて静かにのポーズ
+    char2_pose: 議事録を書いている
+
+  - position: 4セット目 右上
+    text: 席を外しています
+    text_color: 茶色
+    char1_pose: 画面の外へ歩いていく後ろ姿
+    char2_pose: 「離席中」の札を持って留守番
+
+  - position: 4セット目 左中
+    text: 再送します
+    text_color: 青
+    char1_pose: 封筒を差し出す、申し訳なさそうな笑顔
+    char2_pose: 封筒を押して手伝う
+
+  - position: 4セット目 中央中
+    text: 締切前です
+    text_color: 赤
+    char1_pose: 時計を見て焦る、汗マーク
+    char2_pose: カレンダーを指差して知らせる
+
+  - position: 4セット目 右中
+    text: 修正しました
+    text_color: 緑
+    char1_pose: 赤ペンを持って自信ありげな笑顔
+    char2_pose: 消しゴムを抱えて手伝う
+
+  - position: 4セット目 左下
+    text: 問題ありません
+    text_color: 黄緑
+    char1_pose: 両手で大きな丸を作る
+    char2_pose: にこにこ＋キラキラの星
+
+  - position: 4セット目 中央下
+    text: ご相談があります
+    text_color: 水色
+    char1_pose: 遠慮がちに手を挙げる
+    char2_pose: 横で小さく手を挙げる
+
+  - position: 4セット目 右下
+    text: お疲れ様でした
+    text_color: 紺色
+    char1_pose: ねぎらいの笑顔で軽く会釈
+    char2_pose: 帽子を脱いで一緒に会釈
