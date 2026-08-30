@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>動くLINEスタンプ ねこちゃん プレビュー</title>
+<style>
+  body{margin:0;padding:32px 20px 60px;background:#fdf6f2;color:#5a453d;
+       font-family:'Hiragino Sans','Noto Sans JP',system-ui,sans-serif}
+  h1{font-size:20px;margin:0 0 4px;text-align:center}
+  p.sub{margin:0 0 28px;text-align:center;font-size:13px;color:#a98c81}
+  .grid{display:grid;gap:16px;max-width:1000px;margin:0 auto;
+        grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .card{background:#fff;border:1px solid #f0e0d8;border-radius:14px;padding:10px 10px 12px;text-align:center}
+  .card img{width:100%;height:auto;image-rendering:auto;display:block}
+  .card b{display:block;margin-top:6px;font-size:12px;color:#8a6a5e;font-weight:600}
+  .meta{max-width:1000px;margin:26px auto 0;font-size:12px;color:#a98c81;text-align:center;line-height:1.9}
+  .chip{display:inline-block;background:#fff;border:1px solid #f0e0d8;border-radius:999px;padding:3px 12px;margin:2px}
+</style>
+</head>
+<body>
+<h1>動くLINEスタンプ「ねこちゃん」</h1>
+<p class="sub">generate.py の出力（out/）をそのまま表示しています</p>
+<div class="grid" id="g"></div>
+<div class="meta">
+  <span class="chip">APNG 320×270</span>
+  <span class="chip">12フレーム</span>
+  <span class="chip">2秒 × 2ループ</span>
+  <span class="chip">1個 300KB以下</span>
+  <span class="chip">全8個</span>
+</div>
+<script>
+const items = [
+  ["01","おはよう"],["02","ありがとう"],["03","だいすき"],["04","ごめんね"],
+  ["05","OK！"],["06","おやすみ"],["07","がんばれ"],["08","おなかすいた"],
+  ["main","メイン画像 240×240"],["tab","タブ画像 96×74"]
+];
+document.getElementById("g").innerHTML = items.map(([f,l]) =>
+  `<div class="card"><img src="out/${f}.png" alt="${l}"><b>${l}</b></div>`).join("");
+</script>
+</body>
+</html>
