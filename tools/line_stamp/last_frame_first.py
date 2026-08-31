@@ -289,45 +289,74 @@ def _write(clip: Clip, out: Path, loop: int) -> int:
         append_images=clip.frames[1:],
         duration=clip.durations,
         loop=loop,
-        disposal=2,   # APNG_DISPOSE_OP_BACKGROUND: 毎コマ消してから描く
-        blend=0,      # APNG_BLEND_OP_SOURCE: 前のコマと混ぜない
+        # APNGのdispose_opは 0=そのまま 1=背景で消す 2=前のコマに戻す。
+        # 透過キャラは毎コマ消してから描き直す必要があるので 1。
+        # 2 にすると再生時にコマが欠けた壊れたAPNGになる。
+        disposal=1,
+        blend=0,      # blend_op 0 = OP_SOURCE（前のコマと混ぜず置き換える）
         default_image=False,
         optimize=True,
     )
     return out.stat().st_size
 
 
-def save_apng(clip: Clip, out: Path, loop: int, max_bytes: int) -> tuple[int, str]:
-    """300KB に収まるまで減色 → 縮小の順に落としていく。"""
-    size = _write(clip, out, loop)
-    if size <= max_bytes:
-        return size, "無加工（フルカラー）"
+def quantize_keep_alpha(img: Image.Image, colors: int) -> Image.Image:
+    """色だけ減色し、アルファはそのまま残す。
 
-    for colors in (256, 192, 128, 96, 64, 48, 32):
-        reduced = Clip(
-            [f.quantize(colors=colors, method=Image.Quantize.FASTOCTREE).convert("RGBA")
-             for f in clip.frames],
-            clip.durations,
-        )
-        size = _write(reduced, out, loop)
-        if size <= max_bytes:
-            return size, f"{colors}色に減色"
+    RGBA のまま quantize するとアルファまで palette に丸められ、キャラの内側に
+    半透明と穴が大量にできる（「イラストの内部が透過されています」の原因）。
+    減らしたいのは色数なので、RGB だけ減色してアルファは元のまま戻す。
+    """
+    rgb = img.convert("RGB").quantize(
+        colors=colors, method=Image.Quantize.FASTOCTREE).convert("RGB")
+    return Image.merge("RGBA", (*rgb.split(), img.convert("RGBA").getchannel("A")))
 
-    work = clip
+
+def _quantized(clip: Clip, colors: int) -> Clip:
+    return Clip([quantize_keep_alpha(f, colors) for f in clip.frames], clip.durations)
+
+
+def _scaled(clip: Clip, ratio: float, clean: bool) -> Clip:
+    w, h = clip.frames[0].size
+    nw, nh = max(2, int(w * ratio)) & ~1, max(2, int(h * ratio)) & ~1
+    out = Clip([resize_rgba(f, (nw, nh)) for f in clip.frames], clip.durations)
+    return clean_clip(out)[0] if clean else out     # 縮小で穴が復活するため
+
+
+def _candidates(clip: Clip, clean: bool):
+    """300KBに収まるまで試す順。画の劣化が小さいものから並べる。
+
+    減色 → コマ間引き → 縮小。スタンプは絵の粗さのほうが目立つので、
+    コマを減らすほうが縮小より先。
+    """
+    yield "無加工（フルカラー）", clip
+    for colors in (256, 128, 64, 32):
+        yield f"{colors}色に減色", _quantized(clip, colors)
+
+    for nf in (15, 12, 10, 8, MIN_FRAMES):
+        if nf >= len(clip.frames):
+            continue
+        thinned = fit_frame_count(clip, nf, nf)
+        yield f"{nf}コマに間引き", thinned
+        for colors in (128, 64, 32):
+            yield f"{nf}コマ + {colors}色", _quantized(thinned, colors)
+
     for ratio in (0.9, 0.8, 0.7, 0.6, 0.5):
-        w, h = clip.frames[0].size
-        nw, nh = max(2, int(w * ratio)) & ~1, max(2, int(h * ratio)) & ~1
-        work = Clip(
-            [resize_rgba(f, (nw, nh))
-             .quantize(colors=64, method=Image.Quantize.FASTOCTREE)
-             .convert("RGBA") for f in clip.frames],
-            clip.durations,
-        )
-        size = _write(work, out, loop)
-        if size <= max_bytes:
-            return size, f"64色 + {nw}x{nh} に縮小"
+        small = _scaled(clip, ratio, clean)
+        w, h = small.frames[0].size
+        yield f"{w}x{h} に縮小 + 64色", _quantized(small, 64)
 
-    return size, "圧縮しきれず（要素材の見直し）"
+
+def save_apng(clip: Clip, out: Path, loop: int, max_bytes: int,
+              clean: bool = False) -> tuple:
+    """収まるまで落としながら書き出す。戻り値は (バイト数, 手法, 実際に書いたClip)。"""
+    size, label, used = 0, "", clip
+    for label, cand in _candidates(clip, clean):
+        size = _write(cand, out, loop)
+        used = cand
+        if size <= max_bytes:
+            return size, label, used
+    return size, f"{label}（それでも収まらず）", used
 
 
 # ---- レポート ---------------------------------------------------------------
@@ -455,7 +484,7 @@ def main(argv=None) -> int:
         clip, holes = clean_clip(clip)
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    size, how = save_apng(clip, out, loop, args.max_bytes)
+    size, how, clip = save_apng(clip, out, loop, args.max_bytes, clean=args.clean)
 
     print(f"読み込み  {args.input}  ({before}コマ)")
     label = "最終コマ" if args.pose_frame == -1 else f"{args.pose_frame}コマ目"

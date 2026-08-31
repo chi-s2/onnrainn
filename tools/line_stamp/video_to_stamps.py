@@ -223,7 +223,8 @@ def main(argv=None) -> int:
     for i, (a, b) in enumerate(cuts):
         out = args.outdir / f"{args.start + i:02d}.png"
         clip, loop, played, stats = process_cut(frames[a:b], args, per_frame_ms)
-        size, method = save_apng(clip, out, loop, args.max_bytes)
+        size, method, clip = save_apng(clip, out, loop, args.max_bytes,
+                                       clean=not args.no_clean)
         total_holes += stats["holes"]
         ok = size <= args.max_bytes
         ng += 0 if ok else 1

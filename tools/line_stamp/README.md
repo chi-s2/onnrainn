@@ -7,6 +7,7 @@
 | `video_to_stamps.py` | 動画1本 → スタンプ候補のAPNGをまとめて書き出す（工程4のフル自動化） |
 | `last_frame_first.py` | 素材1つ → APNG 1個。決めポーズの1コマ目移動と規格合わせ |
 | `chroma.py` | グリーンバック除去と、内部の透過穴の始末（上の2つが内部で使う） |
+| `sample_cat.py` | 動作確認用の猫グリーンバック動画を作る（生成動画が手元にないとき用） |
 
 ```bash
 pip install -r tools/line_stamp/requirements.txt
@@ -44,6 +45,22 @@ python3 tools/line_stamp/video_to_stamps.py movie.mp4 -o cand/
 7. LINE規格に整えてAPNGで書き出す
 
 穴埋めは縮小のあとにもう一度かけている。縮小すると補間で穴と半透明が復活するため。
+
+### 300KBに収める順番
+
+`無加工 → 減色 → コマ間引き → 縮小` の順に落として、最初に収まったところで止める。
+スタンプは動きの滑らかさより絵の粗さのほうが目立つので、縮小より先にコマを減らす。
+どの手を使ったかは実行ログの `[...]` に出る。
+
+### 手元に生成動画がないとき
+
+```bash
+python3 tools/line_stamp/sample_cat.py -o cat.mp4      # 猫の15秒グリーンバック動画
+python3 tools/line_stamp/video_to_stamps.py cat.mp4 -o cand/
+```
+
+10個の動き（手をふる／おじぎ／ジャンプ／首かしげ／ねる／びっくり／はくしゅ／
+うなずく／のび／てれる）を1.5秒ずつ、決めポーズを各カットの最終コマに置いた素材が出る。
 
 ### よく使うオプション
 
